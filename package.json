@@ -1,0 +1,38 @@
+{
+  "name": "xwords",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/aifly/xwords.git",
+  "author": "fly",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack-dev-server --hot --inline --port 3004"
+  },
+  "dependencies": {
+    "antd": "^2.7.2",
+    "babel-core": "^5.8.38",
+    "babel-loader": "^5.3.2",
+    "babel-plugin-antd": "^0.5.1",
+    "babel-plugin-import": "^1.1.0",
+    "babel-plugin-transform-object-assign": "^6.8.0",
+    "babel-polyfill": "^6.9.0",
+    "createjs": "0.0.1",
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "iscroll": "^5.2.0",
+    "jquery": "^2.2.3",
+    "less": "^2.5.3",
+    "less-loader": "^2.2.2",
+    "less-plugin-clean-css": "^1.5.1",
+    "parallax.js": "^0.1.0",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-hot-loader": "^1.3.0",
+    "react-router": "^2.8.1",
+    "react-tap-event-plugin": "^2.0.1",
+    "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
+  }
+}

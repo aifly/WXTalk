@@ -1,0 +1,98 @@
+﻿@import "../../../assets/css/base.scss";
+
+html, body, div, p, ul, li, ol, dl, dt, dd, header, footer, video, h1, h2, h3, h4, canvas, section, figure {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+html, body {
+  height: 100%;
+}
+body{
+	  font-family: "Helvetica Neue", 'Helvetica', "Microsoft YaHei", '微软雅黑', arial, sans-serif;
+	  overflow-x:hidden;
+}
+img {
+  border: none;
+  vertical-align: middle;
+  width: 100%;
+  height: auto;
+}
+
+input, textarea {
+  outline: none;
+}
+
+.lt-index-main-ui{
+
+}
+.lt-index-mask{
+  
+  z-index: 11;
+}
+.lt-circle{
+   $size:6rem;
+   width:$size;
+   height: $size;
+   @include  pos(a);
+   left: 2rem;
+   top:25vh;
+   span{
+    width:1px;
+    height: 100%;
+    @include pos(a);
+    left:50%;
+    top:0;
+
+    &:before{
+      content:'';
+      width:8px;
+      height: 8px;
+      top: -4px;
+      left: -4px;
+      background: #fff;
+      display: block;;
+      @include br(50%);
+      @include pos(a);
+      -webkit-filter:blur(2px);     
+      
+    }
+   }
+
+}
+
+.lt-word-img{
+   width:4rem;
+   @include pos(a);
+   left: 3rem;
+   top:20vh;
+
+}
+
+.lt-usral,.lt-important{
+  color:#fff;
+  font-size:.5rem;
+  z-index: 20;
+  @include pos(a);
+  @include transform(translate3d(10rem,0,0));
+  -webkit-animation:move 5s linear infinite;
+}
+.lt-usral{
+  -webkit-filter:blur(1px);
+}
+.lt-important{
+}
+
+@-webkit-keyframes move{
+   to{
+     -webkit-transform:translate3d(-3rem,0,0);
+   }
+}

@@ -1,0 +1,64 @@
+﻿@import './base.scss';
+html, body, div, p, ul, li, ol, dl, dt, dd, header, footer, video, h1, h2, h3, h4, canvas, section, figure {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+html, body {
+  height: 100%;
+}
+body{
+	  font-family: "Helvetica Neue", 'Helvetica', "Microsoft YaHei", '微软雅黑', arial, sans-serif;
+	  overflow-x:hidden;
+    font-size: 24px;
+}
+img {
+  border: none;
+  vertical-align: middle;
+  width: 100%;
+  height: auto;
+}
+
+input, textarea {
+  outline: none;
+}
+
+.zmiti-main-ui{
+  background: #ebebeb;
+  @include pos(a);
+  width:640px;
+  height: 100%;
+
+  .zmiti-date{
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-top: 20px;
+    span{
+      color:#fff;
+      line-height: 40px;
+      background: #ccc;
+      padding: 8px 20px;
+      font-size: 24px;
+      @include br(5px);
+    }
+  }
+  $viewW:640px;
+  .zmiti-member{
+    width:$viewW - 70;
+    margin: 25px auto;
+    background: #ccc;
+    @include br(5px);
+    color:#fff;
+    padding: 14px 20px;
+    line-height: 32px;
+  }
+}
