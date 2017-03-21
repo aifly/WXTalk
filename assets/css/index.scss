@@ -30,7 +30,7 @@ img {
 input, textarea {
   outline: none;
 }
-
+$viewW:640px;
 .zmiti-main-ui{
   background: #ebebeb;
   @include pos(a);
@@ -51,7 +51,7 @@ input, textarea {
       @include br(5px);
     }
   }
-  $viewW:640px;
+  
   .zmiti-member{
     width:$viewW - 70;
     margin: 25px auto;
@@ -60,5 +60,34 @@ input, textarea {
     color:#fff;
     padding: 14px 20px;
     line-height: 32px;
+    box-sizing:border-box;
+  }
+}
+
+.zmiti-talk-C{
+  width:$viewW - 70;
+  margin:25px auto;
+  li{
+    @include displayBox(horizontal);
+    -webkit-box-pack:start;
+    -webkit-box-align:start;
+    margin:10px 0;
+    .zmiti-talk-content{
+      margin-left: 10px;
+      aside:last-of-type{
+        background:#fff;
+        padding:8px 5px;
+        line-height: 40px;
+        @include pos(r);
+        &:before{
+          content:'';
+          @include pos(a);
+          left:0;
+        }
+      }
+    }
+  }
+  .zmiti-talk-head{
+    width:64px;
   }
 }

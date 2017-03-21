@@ -12,12 +12,26 @@ export class App extends Component {
 			talkObj:{
 				date:'3月4日',
 				member:[
-					{name:'国务院总理李克强',img:'',id:1},
-					{name:'傅莹(十二届全国人大五次会议发言人)',img:'',id:2},
-					{name:'王国庆(全国政协十二届五次会议发言人)',img:'',id:3},
-					{name:'陈吉宁（环境保护部部长）',img:'',id:4},
-					{name:'王军(国家税务局局长)',img:'',id:5},
-					{name:'陈政高（住房和城乡建设部部长）',img:'',id:6}
+					{name:'国务院总理李克强',img:'./assets/images/zmiti.jpg',id:1},
+					{name:'傅莹(十二届全国人大五次会议发言人)',img:'./assets/images/zmiti.jpg',id:2},
+					{name:'王国庆(全国政协十二届五次会议发言人)',img:'./assets/images/zmiti.jpg',id:3},
+					{name:'陈吉宁（环境保护部部长）',img:'./assets/images/zmiti.jpg',id:4},
+					{name:'王军(国家税务局局长)',img:'./assets/images/zmiti.jpg',id:5},
+					{name:'陈政高（住房和城乡建设部部长）',img:'./assets/images/zmiti.jpg',id:6}
+				],
+				talk:[
+					{
+						id:1,
+						head:'./assets/images/zmiti.jpg',
+						name:'国务院总理李克强',
+						text:'大家好',
+					},
+					{
+						id:3,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆(全国政协十二届五次会议发言人)',
+						text:'大家好',
+					}
 				]
 			}
 		}
@@ -28,16 +42,30 @@ export class App extends Component {
 		
 		return (
 			<div className='zmiti-main-ui'>
-				<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
-				<section className='zmiti-member'>
-					{this.state.talkObj.member[0]+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
-					{this.state.talkObj.member.filter((item,i)=>{
-						return i > 1;
-					}).map((item,i)=>{
-						console.log(i)
-						return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
-					})}
-					<span>等加入群聊</span>
+				<section className='zmiti-scroll-C'>
+					<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
+					<section className='zmiti-member'>
+						{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
+						{this.state.talkObj.member.filter((item,i)=>{
+							return i > 1;
+						}).map((item,i)=>{
+							return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
+						})}
+						<span>等加入群聊</span>
+					</section>
+					<section className='zmiti-talk-C'>
+						<ul className='zmiti-talk-list'>
+							{this.state.talkObj.talk.map((item,i)=>{
+								return <li key={i}>
+									<div className='zmiti-talk-head'><img src={item.head}/></div>
+									<div className='zmiti-talk-content'>
+										<aside>{item.name}</aside>
+										<aside>{item.text}</aside>
+									</div>
+								</li>
+							})}
+						</ul>
+					</section>
 				</section>
 			</div>
 		);
