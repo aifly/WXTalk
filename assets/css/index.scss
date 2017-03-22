@@ -71,23 +71,48 @@ $viewW:640px;
     @include displayBox(horizontal);
     -webkit-box-pack:start;
     -webkit-box-align:start;
-    margin:10px 0;
+    margin-top: 30px;
     .zmiti-talk-content{
-      margin-left: 10px;
+      @include displayBox(vertical);
+    -webkit-box-pack:start;
+    -webkit-box-align:start;
+      margin-left: 24px;
       aside:last-of-type{
-        background:#fff;
-        padding:8px 5px;
-        line-height: 40px;
+        max-width: 380px;
+        div{
+          background:#fff;
+          border:1px solid #bbbbbb;  
+          @include br(5px);
+          padding:18px 14px;
+        }
+        box-sizing:border-box;
         @include pos(r);
         &:before{
           content:'';
           @include pos(a);
-          left:0;
+          left:-11px;
+          @include br(3px);
+          width:20px;
+          height: 20px;
+          background: #fff;
+          border:1px solid #bbb;
+          border-right: none;
+          border-top:none; 
+          top: 20px;
+          @include transform(rotate(45deg));
         }
       }
     }
   }
   .zmiti-talk-head{
-    width:64px;
+    width:72px;
+    
+  }
+  .zmiti-talk-content{
+    aside:first-of-type{
+      color:#666666;
+      @include transform(scale(.9) translate3d(0,-6px,0));
+      @include transformOrigin(left);
+    }
   }
 }

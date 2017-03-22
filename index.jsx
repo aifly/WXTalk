@@ -24,7 +24,7 @@ export class App extends Component {
 						id:1,
 						head:'./assets/images/zmiti.jpg',
 						name:'国务院总理李克强',
-						text:'大家好',
+						text:'大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。',
 					},
 					{
 						id:3,
@@ -60,7 +60,11 @@ export class App extends Component {
 									<div className='zmiti-talk-head'><img src={item.head}/></div>
 									<div className='zmiti-talk-content'>
 										<aside>{item.name}</aside>
-										<aside>{item.text}</aside>
+										<aside>
+											<div>
+												{item.text}
+											</div>
+										</aside>
 									</div>
 								</li>
 							})}
