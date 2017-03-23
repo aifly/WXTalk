@@ -76,6 +76,24 @@ input, textarea {
     -webkit-box-pack: start;
     -webkit-box-align: start;
     margin-top: 30px; }
+    .zmiti-talk-C li.zmiti-user {
+      -webkit-box-pack: end; }
+      .zmiti-talk-C li.zmiti-user .zmiti-talk-content {
+        margin-right: 24px;
+        margin-left: 0;
+        -webkit-box-align: end;
+        -webkit-box-pack: end; }
+        .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type {
+          position: relative; }
+          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div {
+            background: #a7e753; }
+          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before {
+            content: '';
+            right: -11px;
+            left: auto;
+            background: #a7e753;
+            border-left: none;
+            border-bottom: none; }
     .zmiti-talk-C li .zmiti-talk-content {
       display: -webkit-box;
       -webkit-box-align: center;

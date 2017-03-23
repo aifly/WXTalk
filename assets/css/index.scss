@@ -68,6 +68,32 @@ $viewW:640px;
   width:$viewW - 70;
   margin:25px auto;
   li{
+
+
+    &.zmiti-user{
+      -webkit-box-pack:end;   
+      .zmiti-talk-content{
+         margin-right: 24px;
+         margin-left: 0;
+          -webkit-box-align:end;
+          -webkit-box-pack:end;
+
+          aside:last-of-type{
+              div{
+                background: #a7e753;
+              }
+              @include pos(r);
+              &:before{
+                content:'';
+                right:-11px;
+                left: auto;
+                background: #a7e753;
+                border-left: none;
+                border-bottom:none; 
+              }
+            }
+      }
+    }
     @include displayBox(horizontal);
     -webkit-box-pack:start;
     -webkit-box-align:start;

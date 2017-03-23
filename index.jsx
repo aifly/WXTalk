@@ -21,16 +21,25 @@ export class App extends Component {
 				],
 				talk:[
 					{
+						isMe:false,
 						id:1,
 						head:'./assets/images/zmiti.jpg',
 						name:'国务院总理李克强',
 						text:'大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。',
 					},
 					{
+						isMe:false,
 						id:3,
 						head:'./assets/images/zmiti.jpg',
 						name:'王国庆(全国政协十二届五次会议发言人)',
 						text:'大家好',
+					},
+					{
+						id:4,
+						isMe:true,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆',
+						text:'大家好大家好大家好大家好',
 					}
 				]
 			}
@@ -56,7 +65,21 @@ export class App extends Component {
 					<section className='zmiti-talk-C'>
 						<ul className='zmiti-talk-list'>
 							{this.state.talkObj.talk.map((item,i)=>{
-								return <li key={i}>
+								if(item.isMe){
+									return <li key={i} className={'zmiti-user'}>
+												
+												<div className='zmiti-talk-content'>
+													<aside>{item.name}</aside>
+													<aside>
+														<div>
+															{item.text}
+														</div>
+													</aside>
+												</div>
+												<div className='zmiti-talk-head'><img src={item.head}/></div>
+											</li>
+								}
+								return <li key={i} className={item.isMe?'zmiti-user':''}>
 									<div className='zmiti-talk-head'><img src={item.head}/></div>
 									<div className='zmiti-talk-content'>
 										<aside>{item.name}</aside>
