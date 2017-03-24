@@ -39,7 +39,7 @@ export class App extends Component {
 						isMe:true,
 						head:'./assets/images/zmiti.jpg',
 						name:'王国庆',
-						text:'大家好大家好大家好大家好',
+						text:'大家好大家好大家好大家好大家好大家好',
 					}
 				]
 			}
@@ -54,13 +54,15 @@ export class App extends Component {
 				<section className='zmiti-scroll-C'>
 					<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
 					<section className='zmiti-member'>
-						{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
-						{this.state.talkObj.member.filter((item,i)=>{
-							return i > 1;
-						}).map((item,i)=>{
-							return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
-						})}
-						<span>等加入群聊</span>
+						<div>
+							{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
+							{this.state.talkObj.member.filter((item,i)=>{
+								return i > 1;
+							}).map((item,i)=>{
+								return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
+							})}
+							<span>等加入群聊</span>
+						</div>
 					</section>
 					<section className='zmiti-talk-C'>
 						<ul className='zmiti-talk-list'>
@@ -69,7 +71,6 @@ export class App extends Component {
 									return <li key={i} className={'zmiti-user'}>
 												
 												<div className='zmiti-talk-content'>
-													<aside>{item.name}</aside>
 													<aside>
 														<div>
 															{item.text}

@@ -94,15 +94,23 @@
 					date: '3月4日',
 					member: [{ name: '国务院总理李克强', img: './assets/images/zmiti.jpg', id: 1 }, { name: '傅莹(十二届全国人大五次会议发言人)', img: './assets/images/zmiti.jpg', id: 2 }, { name: '王国庆(全国政协十二届五次会议发言人)', img: './assets/images/zmiti.jpg', id: 3 }, { name: '陈吉宁（环境保护部部长）', img: './assets/images/zmiti.jpg', id: 4 }, { name: '王军(国家税务局局长)', img: './assets/images/zmiti.jpg', id: 5 }, { name: '陈政高（住房和城乡建设部部长）', img: './assets/images/zmiti.jpg', id: 6 }],
 					talk: [{
+						isMe: false,
 						id: 1,
 						head: './assets/images/zmiti.jpg',
 						name: '国务院总理李克强',
 						text: '大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。'
 					}, {
+						isMe: false,
 						id: 3,
 						head: './assets/images/zmiti.jpg',
 						name: '王国庆(全国政协十二届五次会议发言人)',
 						text: '大家好'
+					}, {
+						id: 4,
+						isMe: true,
+						head: './assets/images/zmiti.jpg',
+						name: '王国庆',
+						text: '大家好大家好大家好大家好大家好大家好'
 					}]
 				}
 			};
@@ -133,20 +141,24 @@
 						_react2['default'].createElement(
 							'section',
 							{ className: 'zmiti-member' },
-							this.state.talkObj.member[0].name + '邀请你和' + this.state.talkObj.member[1].name + ' 、',
-							this.state.talkObj.member.filter(function (item, i) {
-								return i > 1;
-							}).map(function (item, i) {
-								return _react2['default'].createElement(
-									'span',
-									{ key: i },
-									i >= _this.state.talkObj.member.length - 3 ? item.name : item.name + ' 、'
-								);
-							}),
 							_react2['default'].createElement(
-								'span',
+								'div',
 								null,
-								'等加入群聊'
+								this.state.talkObj.member[0].name + '邀请你和' + this.state.talkObj.member[1].name + ' 、',
+								this.state.talkObj.member.filter(function (item, i) {
+									return i > 1;
+								}).map(function (item, i) {
+									return _react2['default'].createElement(
+										'span',
+										{ key: i },
+										i >= _this.state.talkObj.member.length - 3 ? item.name : item.name + ' 、'
+									);
+								}),
+								_react2['default'].createElement(
+									'span',
+									null,
+									'等加入群聊'
+								)
 							)
 						),
 						_react2['default'].createElement(
@@ -156,9 +168,33 @@
 								'ul',
 								{ className: 'zmiti-talk-list' },
 								this.state.talkObj.talk.map(function (item, i) {
+									if (item.isMe) {
+										return _react2['default'].createElement(
+											'li',
+											{ key: i, className: 'zmiti-user' },
+											_react2['default'].createElement(
+												'div',
+												{ className: 'zmiti-talk-content' },
+												_react2['default'].createElement(
+													'aside',
+													null,
+													_react2['default'].createElement(
+														'div',
+														null,
+														item.text
+													)
+												)
+											),
+											_react2['default'].createElement(
+												'div',
+												{ className: 'zmiti-talk-head' },
+												_react2['default'].createElement('img', { src: item.head })
+											)
+										);
+									}
 									return _react2['default'].createElement(
 										'li',
-										{ key: i },
+										{ key: i, className: item.isMe ? 'zmiti-user' : '' },
 										_react2['default'].createElement(
 											'div',
 											{ className: 'zmiti-talk-head' },
@@ -32050,7 +32086,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\r\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0; }\r\n\r\nhtml, body, div, p, ul, li, ol, dl, dt, dd, header, footer, video, h1, h2, h3, h4, canvas, section, figure {\r\n  padding: 0;\r\n  margin: 0; }\r\n\r\na {\r\n  text-decoration: none; }\r\n\r\nli {\r\n  list-style: none; }\r\n\r\nhtml, body {\r\n  height: 100%; }\r\n\r\nbody {\r\n  font-family: \"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;\r\n  overflow-x: hidden;\r\n  font-size: 24px; }\r\n\r\nimg {\r\n  border: none;\r\n  vertical-align: middle;\r\n  width: 100%;\r\n  height: auto; }\r\n\r\ninput, textarea {\r\n  outline: none; }\r\n\r\n.zmiti-main-ui {\r\n  background: #ebebeb;\r\n  position: absolute;\r\n  width: 640px;\r\n  height: 100%; }\r\n  .zmiti-main-ui .zmiti-date {\r\n    height: 30px;\r\n    line-height: 30px;\r\n    text-align: center;\r\n    margin-top: 20px; }\r\n    .zmiti-main-ui .zmiti-date span {\r\n      color: #fff;\r\n      line-height: 40px;\r\n      background: #ccc;\r\n      padding: 8px 20px;\r\n      font-size: 24px;\r\n      border-radius: 5px; }\r\n  .zmiti-main-ui .zmiti-member {\r\n    width: 570px;\r\n    margin: 25px auto;\r\n    background: #ccc;\r\n    border-radius: 5px;\r\n    color: #fff;\r\n    padding: 14px 20px;\r\n    line-height: 32px;\r\n    box-sizing: border-box; }\r\n\r\n.zmiti-talk-C {\r\n  width: 570px;\r\n  margin: 25px auto; }\r\n  .zmiti-talk-C li {\r\n    display: -webkit-box;\r\n    -webkit-box-align: center;\r\n    -webkit-box-pack: center;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-pack: start;\r\n    -webkit-box-align: start;\r\n    margin-top: 30px; }\r\n    .zmiti-talk-C li .zmiti-talk-content {\r\n      display: -webkit-box;\r\n      -webkit-box-align: center;\r\n      -webkit-box-pack: center;\r\n      -webkit-box-orient: vertical;\r\n      -webkit-box-pack: start;\r\n      -webkit-box-align: start;\r\n      margin-left: 24px; }\r\n      .zmiti-talk-C li .zmiti-talk-content aside:last-of-type {\r\n        max-width: 380px;\r\n        box-sizing: border-box;\r\n        position: relative; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type div {\r\n          background: #fff;\r\n          border: 1px solid #bbbbbb;\r\n          border-radius: 5px;\r\n          padding: 18px 14px; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before {\r\n          content: '';\r\n          position: absolute;\r\n          left: -11px;\r\n          border-radius: 3px;\r\n          width: 20px;\r\n          height: 20px;\r\n          background: #fff;\r\n          border: 1px solid #bbb;\r\n          border-right: none;\r\n          border-top: none;\r\n          top: 20px;\r\n          -webkit-transform: rotate(45deg);\r\n          transform: rotate(45deg); }\r\n  .zmiti-talk-C .zmiti-talk-head {\r\n    width: 72px; }\r\n  .zmiti-talk-C .zmiti-talk-content aside:first-of-type {\r\n    color: #666666;\r\n    -webkit-transform: scale(0.9) translate3d(0, -6px, 0);\r\n    transform: scale(0.9) translate3d(0, -6px, 0);\r\n    -webkit-transform-origin: left;\r\n    transform-origin: left; }\r\n\r\n/*# sourceMappingURL=index.css.map */", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\r\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0; }\r\n\r\nhtml, body, div, p, ul, li, ol, dl, dt, dd, header, footer, video, h1, h2, h3, h4, canvas, section, figure {\r\n  padding: 0;\r\n  margin: 0; }\r\n\r\na {\r\n  text-decoration: none; }\r\n\r\nli {\r\n  list-style: none; }\r\n\r\nhtml, body {\r\n  height: 100%; }\r\n\r\nbody {\r\n  font-family: \"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;\r\n  overflow-x: hidden;\r\n  font-size: 24px; }\r\n\r\nimg {\r\n  border: none;\r\n  vertical-align: middle;\r\n  width: 100%;\r\n  height: auto; }\r\n\r\ninput, textarea {\r\n  outline: none; }\r\n\r\n.zmiti-main-ui {\r\n  background: #ebebeb;\r\n  position: absolute;\r\n  width: 640px;\r\n  height: 100%;\r\n  left: 50%;\r\n  margin-left: -320px; }\r\n  .zmiti-main-ui .zmiti-date {\r\n    height: 30px;\r\n    line-height: 30px;\r\n    text-align: center;\r\n    margin-top: 20px; }\r\n    .zmiti-main-ui .zmiti-date span {\r\n      color: #fff;\r\n      line-height: 40px;\r\n      background: #ccc;\r\n      padding: 8px 20px;\r\n      font-size: 24px;\r\n      border-radius: 5px; }\r\n  .zmiti-main-ui .zmiti-member {\r\n    width: 570px;\r\n    margin: 25px auto;\r\n    background: #ccc;\r\n    border-radius: 5px;\r\n    color: #fff;\r\n    padding: 14px 20px;\r\n    line-height: 32px;\r\n    box-sizing: border-box;\r\n    font-size: 20px; }\r\n\r\n.zmiti-talk-C {\r\n  width: 570px;\r\n  margin: 25px auto; }\r\n  .zmiti-talk-C li {\r\n    display: -webkit-box;\r\n    -webkit-box-align: center;\r\n    -webkit-box-pack: center;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-pack: start;\r\n    -webkit-box-align: start;\r\n    margin-top: 30px; }\r\n    .zmiti-talk-C li.zmiti-user {\r\n      -webkit-box-pack: end; }\r\n      .zmiti-talk-C li.zmiti-user .zmiti-talk-content {\r\n        margin-right: 0;\r\n        display: inline-block; }\r\n        .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type {\r\n          float: right;\r\n          position: relative;\r\n          position: relative; }\r\n          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div {\r\n            background: #a7e753; }\r\n          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before {\r\n            content: '';\r\n            right: -11px;\r\n            left: auto;\r\n            background: #a7e753;\r\n            border-left: none;\r\n            border-bottom: none; }\r\n    .zmiti-talk-C li .zmiti-talk-content {\r\n      display: -webkit-box;\r\n      -webkit-box-align: center;\r\n      -webkit-box-pack: center;\r\n      -webkit-box-orient: vertical;\r\n      -webkit-box-pack: start;\r\n      -webkit-box-align: start;\r\n      margin-left: 24px; }\r\n      .zmiti-talk-C li .zmiti-talk-content aside:last-of-type {\r\n        max-width: 380px;\r\n        box-sizing: border-box;\r\n        position: relative; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type div {\r\n          background: #fff;\r\n          border: 1px solid #bbbbbb;\r\n          border-radius: 8px;\r\n          padding: 18px 14px; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before {\r\n          content: '';\r\n          position: absolute;\r\n          left: -11px;\r\n          border-radius: 3px;\r\n          width: 20px;\r\n          height: 20px;\r\n          background: #fff;\r\n          border: 1px solid #bbb;\r\n          border-right: none;\r\n          border-top: none;\r\n          top: 20px;\r\n          -webkit-transform: rotate(45deg);\r\n          transform: rotate(45deg); }\r\n  .zmiti-talk-C .zmiti-talk-head {\r\n    width: 72px; }\r\n  .zmiti-talk-C .zmiti-talk-content aside:first-of-type {\r\n    color: #666666;\r\n    -webkit-transform: scale(0.9) translate3d(0, -6px, 0);\r\n    transform: scale(0.9) translate3d(0, -6px, 0);\r\n    -webkit-transform-origin: left;\r\n    transform-origin: left; }\r\n\r\n/*# sourceMappingURL=index.css.map */", ""]);
 
 	// exports
 
