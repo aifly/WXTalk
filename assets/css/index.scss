@@ -77,18 +77,29 @@ $viewW:640px;
       -webkit-box-pack:end;   
       .zmiti-talk-content{
         
-         margin-right: 0;
+         margin-right: 24px;
          display: inline-block;
-          
-          aside:last-of-type{
-              float: right;;
-               @include pos(r);
-                
-              div{
-                background: #a7e753;
+          &.zmiti-talk-img{
+
+            aside:last-of-type{
+
+              &:before{
+                display:none;
               }
+              div{
+                background:transparent;
+                border:none;
+                padding:0;
+              }
+            }  
+          }          
+          aside:last-of-type{
 
               @include pos(r);
+              div{
+                background: #a7e753;
+
+              }
               &:before{
                 content:'';
                 right:-11px;
@@ -108,14 +119,32 @@ $viewW:640px;
       @include displayBox(vertical);
     -webkit-box-pack:start;
     -webkit-box-align:start;
+    font-size: 22px;
       margin-left: 24px;
+
+      &.zmiti-talk-img{
+        aside:last-of-type{
+          &:before{
+            display:none;
+          }
+          div{
+            background:transparent;
+            border:none;
+            padding:0;
+          }
+        }  
+      }
       aside:last-of-type{
         max-width: 380px;
         div{
+          
           background:#fff;
           border:1px solid #bbbbbb;  
           @include br(8px);
           padding:18px 14px;
+          a{
+            color:inherit;    
+          }
         }
         box-sizing:border-box;
         @include pos(r);
@@ -146,5 +175,29 @@ $viewW:640px;
       @include transform(scale(.9) translate3d(0,-6px,0));
       @include transformOrigin(left);
     }
+  }
+}
+
+
+.zmiti-frame{
+  width:640px;
+  height:100%;
+  @include pos(f);
+  left:0;
+  top:0;
+  z-index: 999;
+  iframe{
+    width:100%;
+    height:100%;
+  }
+  .zmiti-back{
+    @include pos(f);
+    bottom:0;
+    right:0;
+    background:rgba(0,0,0,.7);
+    color:#fff;
+    padding:12px 26px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
   }
 }

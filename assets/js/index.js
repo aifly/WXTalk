@@ -44,7 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* REACT HOT LOADER */ if (false) { (function () { var ReactHotAPI = require("F:\\xuchang2017\\project\\WXTalk\\node_modules\\react-hot-api\\modules\\index.js"), RootInstanceProvider = require("F:\\xuchang2017\\project\\WXTalk\\node_modules\\react-hot-loader\\RootInstanceProvider.js"), ReactMount = require("react-dom/lib/ReactMount"), React = require("react"); module.makeHot = module.hot.data ? module.hot.data.makeHot : ReactHotAPI(function () { return RootInstanceProvider.getRootInstances(ReactMount); }, React); })(); } try { (function () {
+	/* REACT HOT LOADER */ if (false) { (function () { var ReactHotAPI = require("E:\\project\\WXTalk\\node_modules\\react-hot-api\\modules\\index.js"), RootInstanceProvider = require("E:\\project\\WXTalk\\node_modules\\react-hot-loader\\RootInstanceProvider.js"), ReactMount = require("react-dom/lib/ReactMount"), React = require("react"); module.makeHot = module.hot.data ? module.hot.data.makeHot : ReactHotAPI(function () { return RootInstanceProvider.getRootInstances(ReactMount); }, React); })(); } try { (function () {
 
 	'use strict';
 
@@ -90,28 +90,11 @@
 
 			_get(Object.getPrototypeOf(App.prototype), 'constructor', this).call(this, props);
 			this.state = {
+				currentHref: '',
 				talkObj: {
 					date: '3月4日',
 					member: [{ name: '国务院总理李克强', img: './assets/images/zmiti.jpg', id: 1 }, { name: '傅莹(十二届全国人大五次会议发言人)', img: './assets/images/zmiti.jpg', id: 2 }, { name: '王国庆(全国政协十二届五次会议发言人)', img: './assets/images/zmiti.jpg', id: 3 }, { name: '陈吉宁（环境保护部部长）', img: './assets/images/zmiti.jpg', id: 4 }, { name: '王军(国家税务局局长)', img: './assets/images/zmiti.jpg', id: 5 }, { name: '陈政高（住房和城乡建设部部长）', img: './assets/images/zmiti.jpg', id: 6 }],
-					talk: [{
-						isMe: false,
-						id: 1,
-						head: './assets/images/zmiti.jpg',
-						name: '国务院总理李克强',
-						text: '大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。'
-					}, {
-						isMe: false,
-						id: 3,
-						head: './assets/images/zmiti.jpg',
-						name: '王国庆(全国政协十二届五次会议发言人)',
-						text: '大家好'
-					}, {
-						id: 4,
-						isMe: true,
-						head: './assets/images/zmiti.jpg',
-						name: '王国庆',
-						text: '大家好大家好大家好大家好大家好大家好'
-					}]
+					talk: []
 				}
 			};
 			this.viewW = document.documentElement.clientWidth;
@@ -174,14 +157,19 @@
 											{ key: i, className: 'zmiti-user' },
 											_react2['default'].createElement(
 												'div',
-												{ className: 'zmiti-talk-content' },
+												{ className: 'zmiti-talk-content ' + (item.text ? '' : 'zmiti-talk-img') },
+												_react2['default'].createElement(
+													'aside',
+													null,
+													_react2['default'].createElement('div', null)
+												),
 												_react2['default'].createElement(
 													'aside',
 													null,
 													_react2['default'].createElement(
 														'div',
-														null,
-														item.text
+														{ onTouchTap: _this.displayFrame.bind(_this, item.href) },
+														item.text || _react2['default'].createElement('img', { src: item.img })
 													)
 												)
 											),
@@ -202,7 +190,7 @@
 										),
 										_react2['default'].createElement(
 											'div',
-											{ className: 'zmiti-talk-content' },
+											{ className: 'zmiti-talk-content ' + (item.text ? '' : 'zmiti-talk-img') },
 											_react2['default'].createElement(
 												'aside',
 												null,
@@ -213,14 +201,24 @@
 												null,
 												_react2['default'].createElement(
 													'div',
-													null,
-													item.text
+													{ onTouchTap: _this.displayFrame.bind(_this, item.href) },
+													item.text || _react2['default'].createElement('img', { src: item.img })
 												)
 											)
 										)
 									);
 								})
 							)
+						)
+					),
+					this.state.currentHref && _react2['default'].createElement(
+						'div',
+						{ className: 'zmiti-frame' },
+						_react2['default'].createElement('iframe', { frameBorder: 0, src: this.state.currentHref }),
+						_react2['default'].createElement(
+							'div',
+							{ className: 'zmiti-back', onTouchTap: this.backToApp.bind(this) },
+							'返回'
 						)
 					)
 				);
@@ -284,8 +282,91 @@
 				});
 			}
 		}, {
+			key: 'backToApp',
+			value: function backToApp() {
+				this.setState({
+					currentHref: ''
+				});
+				this.renderTalk(this.iNow);
+			}
+		}, {
+			key: 'displayFrame',
+			value: function displayFrame(href) {
+				if (href) {
+					this.setState({
+						currentHref: href
+					});
+					this.clearRender();
+				}
+			}
+		}, {
 			key: 'componentWillMount',
-			value: function componentWillMount() {}
+			value: function componentWillMount() {
+				var _this2 = this;
+
+				this.defaultName = '智媒体';
+				this.talk = [{
+					isMe: false,
+					id: 1,
+					head: './assets/images/zmiti.jpg',
+					name: '国务院总理李克强',
+					text: '大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。'
+				}, {
+					isMe: false,
+					id: 1,
+					head: './assets/images/zmiti.jpg',
+					name: '王国庆(全国政协十二届五次会议发言人)',
+					text: '@{username},来说说你的看法。',
+					href: 'http://h5.zmiti.com/public/xwords/'
+				}, {
+					isMe: false,
+					id: 1,
+					head: './assets/images/zmiti.jpg',
+					name: '王国庆(全国政协十二届五次会议发言人)',
+					text: '',
+					img: './assets/images/1.jpg',
+					href: 'http://h5.zmiti.com/public/xwords/'
+				}, {
+					isMe: true,
+					id: 3,
+					head: './assets/images/zmiti.jpg',
+					name: '王国庆(全国政协十二届五次会议发言人)',
+					text: '',
+					img: './assets/images/timg.gif',
+					href: 'http://h5.zmiti.com/public/xwords/'
+				}, {
+					id: 4,
+					isMe: true,
+					head: './assets/images/zmiti.jpg',
+					name: '王国庆',
+					text: '大家好大家好大家好大家好大家好大家好'
+				}];
+				this.talk.forEach(function (item, i) {
+					item.text && (item.text = item.text.replace(/{username}/ig, _this2.defaultName));
+				});
+				this.iNow = 0;
+				this.renderTalk();
+			}
+		}, {
+			key: 'clearRender',
+			value: function clearRender() {
+				clearInterval(this.talkTimer);
+			}
+		}, {
+			key: 'renderTalk',
+			value: function renderTalk() {
+				var _this3 = this;
+
+				this.talkTimer = setInterval(function () {
+					if (_this3.talk[_this3.iNow]) {
+						_this3.state.talkObj.talk.push(_this3.talk[_this3.iNow]);
+						_this3.iNow++;
+						_this3.forceUpdate();
+					} else {
+						clearInterval(_this3.talkTimer);
+					}
+				}, 2000);
+			}
 		}]);
 
 		return App;
@@ -295,7 +376,7 @@
 
 	_reactDom2['default'].render(_react2['default'].createElement(App, null), document.getElementById('fly-main-ui'));
 
-	/* REACT HOT LOADER */ }).call(this); } finally { if (false) { (function () { var foundReactClasses = module.hot.data && module.hot.data.foundReactClasses || false; if (module.exports && module.makeHot) { var makeExportsHot = require("F:\\xuchang2017\\project\\WXTalk\\node_modules\\react-hot-loader\\makeExportsHot.js"); if (makeExportsHot(module, require("react"))) { foundReactClasses = true; } var shouldAcceptModule = true && foundReactClasses; if (shouldAcceptModule) { module.hot.accept(function (err) { if (err) { console.error("Cannot apply hot update to " + "index.jsx" + ": " + err.message); } }); } } module.hot.dispose(function (data) { data.makeHot = module.makeHot; data.foundReactClasses = foundReactClasses; }); })(); } }
+	/* REACT HOT LOADER */ }).call(this); } finally { if (false) { (function () { var foundReactClasses = module.hot.data && module.hot.data.foundReactClasses || false; if (module.exports && module.makeHot) { var makeExportsHot = require("E:\\project\\WXTalk\\node_modules\\react-hot-loader\\makeExportsHot.js"); if (makeExportsHot(module, require("react"))) { foundReactClasses = true; } var shouldAcceptModule = true && foundReactClasses; if (shouldAcceptModule) { module.hot.accept(function (err) { if (err) { console.error("Cannot apply hot update to " + "index.jsx" + ": " + err.message); } }); } } module.hot.dispose(function (data) { data.makeHot = module.makeHot; data.foundReactClasses = foundReactClasses; }); })(); } }
 
 /***/ },
 /* 1 */
@@ -32086,7 +32167,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\r\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0; }\r\n\r\nhtml, body, div, p, ul, li, ol, dl, dt, dd, header, footer, video, h1, h2, h3, h4, canvas, section, figure {\r\n  padding: 0;\r\n  margin: 0; }\r\n\r\na {\r\n  text-decoration: none; }\r\n\r\nli {\r\n  list-style: none; }\r\n\r\nhtml, body {\r\n  height: 100%; }\r\n\r\nbody {\r\n  font-family: \"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;\r\n  overflow-x: hidden;\r\n  font-size: 24px; }\r\n\r\nimg {\r\n  border: none;\r\n  vertical-align: middle;\r\n  width: 100%;\r\n  height: auto; }\r\n\r\ninput, textarea {\r\n  outline: none; }\r\n\r\n.zmiti-main-ui {\r\n  background: #ebebeb;\r\n  position: absolute;\r\n  width: 640px;\r\n  height: 100%;\r\n  left: 50%;\r\n  margin-left: -320px; }\r\n  .zmiti-main-ui .zmiti-date {\r\n    height: 30px;\r\n    line-height: 30px;\r\n    text-align: center;\r\n    margin-top: 20px; }\r\n    .zmiti-main-ui .zmiti-date span {\r\n      color: #fff;\r\n      line-height: 40px;\r\n      background: #ccc;\r\n      padding: 8px 20px;\r\n      font-size: 24px;\r\n      border-radius: 5px; }\r\n  .zmiti-main-ui .zmiti-member {\r\n    width: 570px;\r\n    margin: 25px auto;\r\n    background: #ccc;\r\n    border-radius: 5px;\r\n    color: #fff;\r\n    padding: 14px 20px;\r\n    line-height: 32px;\r\n    box-sizing: border-box;\r\n    font-size: 20px; }\r\n\r\n.zmiti-talk-C {\r\n  width: 570px;\r\n  margin: 25px auto; }\r\n  .zmiti-talk-C li {\r\n    display: -webkit-box;\r\n    -webkit-box-align: center;\r\n    -webkit-box-pack: center;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-pack: start;\r\n    -webkit-box-align: start;\r\n    margin-top: 30px; }\r\n    .zmiti-talk-C li.zmiti-user {\r\n      -webkit-box-pack: end; }\r\n      .zmiti-talk-C li.zmiti-user .zmiti-talk-content {\r\n        margin-right: 0;\r\n        display: inline-block; }\r\n        .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type {\r\n          float: right;\r\n          position: relative;\r\n          position: relative; }\r\n          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div {\r\n            background: #a7e753; }\r\n          .zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before {\r\n            content: '';\r\n            right: -11px;\r\n            left: auto;\r\n            background: #a7e753;\r\n            border-left: none;\r\n            border-bottom: none; }\r\n    .zmiti-talk-C li .zmiti-talk-content {\r\n      display: -webkit-box;\r\n      -webkit-box-align: center;\r\n      -webkit-box-pack: center;\r\n      -webkit-box-orient: vertical;\r\n      -webkit-box-pack: start;\r\n      -webkit-box-align: start;\r\n      margin-left: 24px; }\r\n      .zmiti-talk-C li .zmiti-talk-content aside:last-of-type {\r\n        max-width: 380px;\r\n        box-sizing: border-box;\r\n        position: relative; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type div {\r\n          background: #fff;\r\n          border: 1px solid #bbbbbb;\r\n          border-radius: 8px;\r\n          padding: 18px 14px; }\r\n        .zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before {\r\n          content: '';\r\n          position: absolute;\r\n          left: -11px;\r\n          border-radius: 3px;\r\n          width: 20px;\r\n          height: 20px;\r\n          background: #fff;\r\n          border: 1px solid #bbb;\r\n          border-right: none;\r\n          border-top: none;\r\n          top: 20px;\r\n          -webkit-transform: rotate(45deg);\r\n          transform: rotate(45deg); }\r\n  .zmiti-talk-C .zmiti-talk-head {\r\n    width: 72px; }\r\n  .zmiti-talk-C .zmiti-talk-content aside:first-of-type {\r\n    color: #666666;\r\n    -webkit-transform: scale(0.9) translate3d(0, -6px, 0);\r\n    transform: scale(0.9) translate3d(0, -6px, 0);\r\n    -webkit-transform-origin: left;\r\n    transform-origin: left; }\r\n\r\n/*# sourceMappingURL=index.css.map */", ""]);
+	exports.push([module.id, ".lt-full{width:100%;height:100%;position:absolute;left:0;top:0}html,body,div,p,ul,li,ol,dl,dt,dd,header,footer,video,h1,h2,h3,h4,canvas,section,figure{padding:0;margin:0}a{text-decoration:none}li{list-style:none}html,body{height:100%}body{font-family:\"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;overflow-x:hidden;font-size:24px}img{border:none;vertical-align:middle;width:100%;height:auto}input,textarea{outline:none}.zmiti-main-ui{background:#ebebeb;position:absolute;width:640px;height:100%;left:50%;margin-left:-320px}.zmiti-main-ui .zmiti-date{height:30px;line-height:30px;text-align:center;margin-top:20px}.zmiti-main-ui .zmiti-date span{color:#fff;line-height:40px;background:#ccc;padding:8px 20px;font-size:24px;border-radius:5px}.zmiti-main-ui .zmiti-member{width:570px;margin:25px auto;background:#ccc;border-radius:5px;color:#fff;padding:14px 20px;line-height:32px;box-sizing:border-box;font-size:20px}.zmiti-talk-C{width:570px;margin:25px auto}.zmiti-talk-C li{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-align:start;margin-top:30px}.zmiti-talk-C li.zmiti-user{-webkit-box-pack:end}.zmiti-talk-C li.zmiti-user .zmiti-talk-content{margin-right:24px;display:inline-block}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type{position:relative}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div{background:#a7e753}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before{content:'';right:-11px;left:auto;background:#a7e753;border-left:none;border-bottom:none}.zmiti-talk-C li .zmiti-talk-content{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:vertical;-webkit-box-pack:start;-webkit-box-align:start;font-size:22px;margin-left:24px}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type{max-width:380px;box-sizing:border-box;position:relative}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div{background:#fff;border:1px solid #bbbbbb;border-radius:8px;padding:18px 14px}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div a{color:inherit}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before{content:'';position:absolute;left:-11px;border-radius:3px;width:20px;height:20px;background:#fff;border:1px solid #bbb;border-right:none;border-top:none;top:20px;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.zmiti-talk-C .zmiti-talk-head{width:72px}.zmiti-talk-C .zmiti-talk-content aside:first-of-type{color:#666666;-webkit-transform:scale(0.9) translate3d(0, -6px, 0);transform:scale(0.9) translate3d(0, -6px, 0);-webkit-transform-origin:left;transform-origin:left}.zmiti-frame{width:640px;height:100%;position:fixed;left:0;top:0;z-index:999}.zmiti-frame iframe{width:100%;height:100%}.zmiti-frame .zmiti-back{position:fixed;bottom:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:12px 26px;border-top-left-radius:5px;border-bottom-left-radius:5px}\r\n/*# sourceMappingURL=index.css.map */\r\n", ""]);
 
 	// exports
 

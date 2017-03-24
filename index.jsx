@@ -9,6 +9,7 @@ export class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			currentHref:'',
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -20,27 +21,7 @@ export class App extends Component {
 					{name:'陈政高（住房和城乡建设部部长）',img:'./assets/images/zmiti.jpg',id:6}
 				],
 				talk:[
-					{
-						isMe:false,
-						id:1,
-						head:'./assets/images/zmiti.jpg',
-						name:'国务院总理李克强',
-						text:'大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。',
-					},
-					{
-						isMe:false,
-						id:3,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆(全国政协十二届五次会议发言人)',
-						text:'大家好',
-					},
-					{
-						id:4,
-						isMe:true,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆',
-						text:'大家好大家好大家好大家好大家好大家好',
-					}
+					
 				]
 			}
 		}
@@ -69,24 +50,27 @@ export class App extends Component {
 							{this.state.talkObj.talk.map((item,i)=>{
 								if(item.isMe){
 									return <li key={i} className={'zmiti-user'}>
-												
-												<div className='zmiti-talk-content'>
+												<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
 													<aside>
-														<div>
-															{item.text}
+														<div></div>
+													</aside>
+													<aside>
+														<div onTouchTap={this.displayFrame.bind(this,item.href)}>
+															{item.text || <img  src={item.img}/>}
 														</div>
 													</aside>
+
 												</div>
 												<div className='zmiti-talk-head'><img src={item.head}/></div>
 											</li>
 								}
 								return <li key={i} className={item.isMe?'zmiti-user':''}>
 									<div className='zmiti-talk-head'><img src={item.head}/></div>
-									<div className='zmiti-talk-content'>
+									<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
 										<aside>{item.name}</aside>
 										<aside>
-											<div>
-												{item.text}
+											<div onTouchTap={this.displayFrame.bind(this,item.href)}>
+												{item.text || <img  src={item.img}/>}
 											</div>
 										</aside>
 									</div>
@@ -95,6 +79,12 @@ export class App extends Component {
 						</ul>
 					</section>
 				</section>
+				{this.state.currentHref && <div className='zmiti-frame'>
+					<iframe frameBorder={0} src={this.state.currentHref}></iframe>
+					<div className='zmiti-back' onTouchTap={this.backToApp.bind(this)}>
+						返回
+					</div>
+				</div>}
 			</div>
 		);
 	}
@@ -166,9 +156,89 @@ export class App extends Component {
 		
 	}
 
+	backToApp(){
+		this.setState({
+			currentHref:''
+		});
+		this.renderTalk(this.iNow);
+	}
+
+	displayFrame(href){
+		if(href){
+			this.setState({
+				currentHref:href
+			});	
+			this.clearRender();
+		}
+		
+	}
+
 	componentWillMount() {
-		
-		
+		this.defaultName = '智媒体';
+		this.talk = [
+			{
+						isMe:false,
+						id:1,
+						head:'./assets/images/zmiti.jpg',
+						name:'国务院总理李克强',
+						text:'大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。',
+					},
+					{
+						isMe:false,
+						id:1,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆(全国政协十二届五次会议发言人)',
+						text:'@{username},来说说你的看法。',
+						href:'http://h5.zmiti.com/public/xwords/'
+					},
+					{
+						isMe:false,
+						id:1,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆(全国政协十二届五次会议发言人)',
+						text:'',
+						img:'./assets/images/1.jpg',
+						href:'http://h5.zmiti.com/public/xwords/'
+					},
+					{
+						isMe:true,
+						id:3,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆(全国政协十二届五次会议发言人)',
+						text:'',
+						img:'./assets/images/timg.gif',
+						href:'http://h5.zmiti.com/public/xwords/'
+					},
+					{
+						id:4,
+						isMe:true,
+						head:'./assets/images/zmiti.jpg',
+						name:'王国庆',
+						text:'大家好大家好大家好大家好大家好大家好',
+					}
+		]
+		this.talk.forEach((item,i)=>{
+			item.text && (item.text = item.text.replace(/{username}/ig,this.defaultName));
+		});
+		this.iNow = 0 ;
+		this.renderTalk();		
+	}
+
+	clearRender(){
+		clearInterval(this.talkTimer);
+	}
+
+	renderTalk(){
+		this.talkTimer = setInterval(()=>{
+			if(this.talk[this.iNow]){
+				this.state.talkObj.talk.push(this.talk[this.iNow]);
+				this.iNow++;			
+				this.forceUpdate();	
+			}
+			else{
+				clearInterval(this.talkTimer);
+			}
+		},2000);
 	}
 }
 
