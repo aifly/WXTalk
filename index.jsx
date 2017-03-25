@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin && injectTapEventPlugin();
-
+import $ from 'jquery';
+injectTapEventPlugin();
+import IScroll from 'iscroll';
 import './assets/css/index.css';
 export class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			scrollTop:0,
 			currentHref:'',
 			talkObj:{
 				date:'3月4日',
@@ -32,59 +33,65 @@ export class App extends Component {
 		
 		return (
 			<div className='zmiti-main-ui'>
-				<section className='zmiti-scroll-C'>
-					<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
-					<section className='zmiti-member'>
-						<div>
-							{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
-							{this.state.talkObj.member.filter((item,i)=>{
-								return i > 1;
-							}).map((item,i)=>{
-								return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
-							})}
-							<span>等加入群聊</span>
-						</div>
-					</section>
-					<section className='zmiti-talk-C'>
-						<ul className='zmiti-talk-list'>
-							{this.state.talkObj.talk.map((item,i)=>{
-								if(item.isMe){
-									return <li key={i} className={'zmiti-user'}>
-												<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
-													<aside>
-														<div></div>
-													</aside>
-													<aside>
-														<div onTouchTap={this.displayFrame.bind(this,item.href)}>
-															{item.text || <img  src={item.img}/>}
-														</div>
-													</aside>
+				<section className='zmiti-scroll-C' ref='zmiti-scroll-C' style={{height:this.viewH - 85}}>
+					<div ref='scroller' className={'zmiti-scroller'} style={{paddingBottom:20,WebkitTransform:'translate3d(0,'+this.state.scrollTop+'px,0)'}}>
+						<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
+						<section className='zmiti-member'>
+							<div>
+								{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
+								{this.state.talkObj.member.filter((item,i)=>{
+									return i > 1;
+								}).map((item,i)=>{
+									return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
+								})}
+								<span>等加入群聊</span>
+							</div>
+						</section>
+						<section className='zmiti-talk-C'>
+							<ul className='zmiti-talk-list'>
+								{this.state.talkObj.talk.map((item,i)=>{
+									if(item.isMe){
+										return <li key={i} className={'zmiti-user'}>
+													<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
+														<aside>
+															<div></div>
+														</aside>
+														<aside>
+															<div onTouchTap={this.displayFrame.bind(this,item.href)}>
+																{item.text || <img  src={item.img}/>}
+															</div>
+														</aside>
 
+													</div>
+													<div className='zmiti-talk-head'><img src={item.head}/></div>
+												</li>
+									}
+									return <li key={i} className={item.isMe?'zmiti-user':''}>
+										<div className='zmiti-talk-head'><img src={item.head}/></div>
+										<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
+											<aside>{item.name}</aside>
+											<aside>
+												<div onTouchTap={this.displayFrame.bind(this,item.href)}>
+													{item.text || <img  src={item.img}/>}
 												</div>
-												<div className='zmiti-talk-head'><img src={item.head}/></div>
-											</li>
-								}
-								return <li key={i} className={item.isMe?'zmiti-user':''}>
-									<div className='zmiti-talk-head'><img src={item.head}/></div>
-									<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
-										<aside>{item.name}</aside>
-										<aside>
-											<div onTouchTap={this.displayFrame.bind(this,item.href)}>
-												{item.text || <img  src={item.img}/>}
-											</div>
-										</aside>
-									</div>
-								</li>
-							})}
-						</ul>
-					</section>
+											</aside>
+										</div>
+									</li>
+								})}
+							</ul>
+						</section>
+					</div>
 				</section>
+				<div className='zmiti-talk-input'>
+					<img src='./assets/images/talk-input.jpg'/>
+				</div>
 				{this.state.currentHref && <div className='zmiti-frame'>
 					<iframe frameBorder={0} src={this.state.currentHref}></iframe>
 					<div className='zmiti-back' onTouchTap={this.backToApp.bind(this)}>
 						返回
 					</div>
 				</div>}
+
 			</div>
 		);
 	}
@@ -173,7 +180,10 @@ export class App extends Component {
 		
 	}
 
-	componentWillMount() {
+	componentDidMount() {
+
+
+
 		this.defaultName = '智媒体';
 		this.talk = [
 			{
@@ -221,7 +231,8 @@ export class App extends Component {
 			item.text && (item.text = item.text.replace(/{username}/ig,this.defaultName));
 		});
 		this.iNow = 0 ;
-		this.renderTalk();		
+		//this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+		this.renderTalk();
 	}
 
 	clearRender(){
@@ -232,11 +243,19 @@ export class App extends Component {
 		this.talkTimer = setInterval(()=>{
 			if(this.talk[this.iNow]){
 				this.state.talkObj.talk.push(this.talk[this.iNow]);
-				this.iNow++;			
+				
+ 				this.iNow++;			
 				this.forceUpdate();	
+				setTimeout(()=>{
+					this.state.scrollTop = this.refs['scroller'].offsetHeight - (this.viewH - 85)<=0?0:-(this.refs['scroller'].offsetHeight - (this.viewH - 85));
+					this.forceUpdate();	
+				},100)
+				//this.scroll.refresh();
 			}
 			else{
 				clearInterval(this.talkTimer);
+				this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+				this.scroll.scrollTo(0,this.state.scrollTop,0);
 			}
 		},2000);
 	}

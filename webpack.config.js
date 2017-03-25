@@ -24,7 +24,7 @@ var webpack = require('webpack');
          loaders: [{
              test: /\.jsx|\.js|\.es6$/,
              exclude: /node_modules/,
-             loaders: ['react-hot','babel']
+             loaders: ['babel']
              },
              {
                  test: /\.(css)$/,
