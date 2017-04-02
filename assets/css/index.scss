@@ -83,6 +83,15 @@ $viewW:640px;
   }
 }
 
+.zmiti-modify-groupname{
+  width:570px;
+  margin:20px auto;
+  text-align: center;
+  background:#ccc;
+  color:#fff;
+  padding:6px 0;
+  @include br(5px);
+}
 .zmiti-talk-C{
   width:$viewW - 70;
   margin:25px auto;
@@ -183,6 +192,7 @@ $viewW:640px;
   }
   .zmiti-talk-head{
     width:72px;
+    height:72px;
     
   }
   .zmiti-talk-content{

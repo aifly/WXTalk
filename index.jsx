@@ -11,6 +11,8 @@ export class App extends Component {
 		this.state = {
 			scrollTop:0,
 			currentHref:'',
+			showMembers:false,
+			showGroupName:false,
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -31,22 +33,30 @@ export class App extends Component {
 	}
 	render() {
 		
+		var mainStyle={};
+		if(this.state.talkObj.background){
+			mainStyle.background = 'url('+this.state.talkObj.background+') no-repeat center / cover'
+		}
+
 		return (
-			<div className='zmiti-main-ui'>
+			<div className='zmiti-main-ui' style={mainStyle}>
+				{this.state.talkObj.bgSound && <audio ref='audio' src={this.state.talkObj.bgSound} autoPlay loop></audio>}
+				<audio src='./assets/music/talk.mp3' ref='talkAudio'></audio>
 				<section className='zmiti-scroll-C' ref='zmiti-scroll-C' style={{height:this.viewH - 85}}>
 					<div ref='scroller' className={'zmiti-scroller'} style={{paddingBottom:20,WebkitTransform:'translate3d(0,'+this.state.scrollTop+'px,0)'}}>
 						<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
-						<section className='zmiti-member'>
-							<div>
-								{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
-								{this.state.talkObj.member.filter((item,i)=>{
-									return i > 1;
-								}).map((item,i)=>{
-									return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
-								})}
-								<span>等加入群聊</span>
-							</div>
-						</section>
+						{this.state.showMembers && <section className='zmiti-member'>
+													<div>
+														{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
+														{this.state.talkObj.member.filter((item,i)=>{
+															return i > 1;
+														}).map((item,i)=>{
+															return <span key={i}>{i>= this.state.talkObj.member.length - 3 ? item.name: item.name+' 、'}</span>
+														})}
+														<span>等加入群聊</span>
+													</div>
+												</section>}
+						{this.state.talkObj.groupName && this.state.showGroupName && <section className='zmiti-modify-groupname'>{this.state.talkObj.member[0].name}修改群名称为{this.state.talkObj.groupName}</section>}
 						<section className='zmiti-talk-C'>
 							<ul className='zmiti-talk-list'>
 								{this.state.talkObj.talk.map((item,i)=>{
@@ -63,11 +73,11 @@ export class App extends Component {
 														</aside>
 
 													</div>
-													<div className='zmiti-talk-head'><img src={item.head}/></div>
+													<div className='zmiti-talk-head' style={{background:'url('+item.head+') no-repeat center / cover'}}></div>
 												</li>
 									}
 									return <li key={i} className={item.isMe?'zmiti-user':''}>
-										<div className='zmiti-talk-head'><img src={item.head}/></div>
+										<div className='zmiti-talk-head'  style={{background:'url('+item.head+') no-repeat center / cover'}}></div>
 										<div className={'zmiti-talk-content ' + (item.text?'':'zmiti-talk-img')}>
 											<aside>{item.name}</aside>
 											<aside>
@@ -227,12 +237,33 @@ export class App extends Component {
 						text:'大家好大家好大家好大家好大家好大家好',
 					}
 		]
-		this.talk.forEach((item,i)=>{
-			item.text && (item.text = item.text.replace(/{username}/ig,this.defaultName));
+		$.getJSON('./assets/js/data.json',(data)=>{
+			this.talk = data.talk;
+			this.state.talkObj.member = data.memberList;
+
+
+			this.state.talkObj.groupName = data.groupName;
+			this.state.talkObj.background = data.background;
+			this.state.talkObj.bgSound = data.bgSound;
+			this.forceUpdate();
+			this.defaultName = data.username;
+
+			document.title = data.title;
+
+			this.talk.forEach((item,i)=>{
+				item.text && (item.text = item.text.replace(/{username}/ig,this.defaultName));
+			});
+			this.iNow = 0 ;
+			//this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+			this.renderTalk();
 		});
-		this.iNow = 0 ;
-		//this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
-		this.renderTalk();
+
+		$(document).on('touchstart',()=>{
+			if(this.refs['audio'] && this.refs['audio'].paused){
+				this.refs['audio'].play();
+			}	
+		})
+		
 	}
 
 	clearRender(){
@@ -240,23 +271,42 @@ export class App extends Component {
 	}
 
 	renderTalk(){
-		this.talkTimer = setInterval(()=>{
-			if(this.talk[this.iNow]){
-				this.state.talkObj.talk.push(this.talk[this.iNow]);
-				
- 				this.iNow++;			
+
+		if(!this.state.showMembers)	{
+			setTimeout(()=>{
+				this.state.showMembers = true;
 				this.forceUpdate();	
-				setTimeout(()=>{
-					this.state.scrollTop = this.refs['scroller'].offsetHeight - (this.viewH - 85)<=0?0:-(this.refs['scroller'].offsetHeight - (this.viewH - 85));
+			},1000)
+		}
+
+		var talkAudio = this.refs['talkAudio'];
+		this.talkTimer = setInterval(()=>{
+			
+		
+			this.state.showGroupName = true;
+			this.forceUpdate();
+			setTimeout(()=>{
+				
+				if(this.talk[this.iNow]){
+					this.state.talkObj.talk.push(this.talk[this.iNow]);
+					talkAudio.play();
+	 				this.iNow++;			
 					this.forceUpdate();	
-				},100)
-				//this.scroll.refresh();
-			}
-			else{
-				clearInterval(this.talkTimer);
-				this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
-				this.scroll.scrollTo(0,this.state.scrollTop,0);
-			}
+					setTimeout(()=>{
+						this.state.scrollTop = this.refs['scroller'].offsetHeight - (this.viewH - 85)<=0?0:-(this.refs['scroller'].offsetHeight - (this.viewH - 85));
+						this.forceUpdate();	
+					},100)
+					//this.scroll.refresh();
+				}
+				else{
+					clearInterval(this.talkTimer);
+					this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+					this.scroll.scrollTo(0,this.state.scrollTop,0);
+				}
+			},1800);
+					
+
+			
 		},2000);
 	}
 }
