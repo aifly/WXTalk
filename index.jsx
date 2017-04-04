@@ -44,7 +44,7 @@ export class App extends Component {
 				<audio src='./assets/music/talk.mp3' ref='talkAudio'></audio>
 				<section className='zmiti-scroll-C' ref='zmiti-scroll-C' style={{height:this.viewH - 85}}>
 					<div ref='scroller' className={'zmiti-scroller'} style={{paddingBottom:20,WebkitTransform:'translate3d(0,'+this.state.scrollTop+'px,0)'}}>
-						<section className='zmiti-date'><span>{this.state.talkObj.date}</span></section>
+						{<section style={{display:'none'}} className='zmiti-date'><span>{this.state.talkObj.date}</span></section>}
 						{this.state.showMembers && <section className='zmiti-member'>
 													<div>
 														{this.state.talkObj.member[0].name+'邀请你和'+this.state.talkObj.member[1].name+' 、'}
@@ -73,7 +73,8 @@ export class App extends Component {
 														</aside>
 
 													</div>
-													<div className='zmiti-talk-head' style={{background:'url('+item.head+') no-repeat center / cover'}}></div>
+													<div className='zmiti-talk-head' style={{background:'url('+item.head+') no-repeat center / cover'}}>
+													</div>
 												</li>
 									}
 									return <li key={i} className={item.isMe?'zmiti-user':''}>
@@ -106,7 +107,7 @@ export class App extends Component {
 		);
 	}
 
-	wxConfig(){
+	wxConfig(title,desc,img){
 		   var durl = location.href.split('#')[0]; //window.location;
 		        var code_durl = encodeURIComponent(durl);
 			$.ajax({
@@ -140,30 +141,30 @@ export class App extends Component {
 		    	wx.ready(()=>{
 		    			 		//朋友圈
                     wx.onMenuShareTimeline({
-                        title: '多少人为基层代表点赞', // 分享标题
+                        title: title, // 分享标题
                         link: durl, // 分享链接
-                        imgUrl: "http://webapi.zmiti.com/public/dianzan/assets/images/300.jpg", // 分享图标
-                        desc: "2017年两会，让我们来关注基层代表，为他们点赞吧",
+                        imgUrl: img, // 分享图标
+                        desc: desc,
                         success: function () { },
                         cancel: function () { }
                     });
                     //朋友
                     wx.onMenuShareAppMessage({
-                        title: "多少人为基层代表点赞", // 分享标题
+                        title: title, // 分享标题
                         link: durl, // 分享链接
-                        imgUrl: "http://webapi.zmiti.com/public/dianzan/assets/images/300.jpg", // 分享图标
+                        imgUrl: img, // 分享图标
                         type: "link",
                         dataUrl: "",
-                        desc: "2017年两会，让我们来关注基层代表，为他们点赞吧",
+                        desc: desc,
                         success: function () { },
                         cancel: function () { }
                     });
                     //qq
                     wx.onMenuShareQQ({
-                        title: "多少人为基层代表点赞", // 分享标题
+                        title: title, // 分享标题
                         link: durl, // 分享链接
-                        imgUrl: "http://webapi.zmiti.com/public/dianzan/assets/images/300.jpg", // 分享图标
-                        desc: "2017年两会，让我们来关注基层代表，为他们点赞吧",
+                        imgUrl: img, // 分享图标
+                        desc: desc,
                         success: function () { },
                         cancel: function () { }
                     });
@@ -191,72 +192,101 @@ export class App extends Component {
 	}
 
 	componentDidMount() {
-
-
-
-		this.defaultName = '智媒体';
+		
 		this.talk = [
-			{
-						isMe:false,
-						id:1,
-						head:'./assets/images/zmiti.jpg',
-						name:'国务院总理李克强',
-						text:'大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。大家好！全国政协十二届五次会议已经于3月3日下午开幕了。',
-					},
-					{
-						isMe:false,
-						id:1,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆(全国政协十二届五次会议发言人)',
-						text:'@{username},来说说你的看法。',
-						href:'http://h5.zmiti.com/public/xwords/'
-					},
-					{
-						isMe:false,
-						id:1,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆(全国政协十二届五次会议发言人)',
-						text:'',
-						img:'./assets/images/1.jpg',
-						href:'http://h5.zmiti.com/public/xwords/'
-					},
-					{
-						isMe:true,
-						id:3,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆(全国政协十二届五次会议发言人)',
-						text:'',
-						img:'./assets/images/timg.gif',
-						href:'http://h5.zmiti.com/public/xwords/'
-					},
-					{
-						id:4,
-						isMe:true,
-						head:'./assets/images/zmiti.jpg',
-						name:'王国庆',
-						text:'大家好大家好大家好大家好大家好大家好',
-					}
+			
 		]
 		$.getJSON('./assets/js/data.json',(data)=>{
 			this.talk = data.talk;
 			this.state.talkObj.member = data.memberList;
-
-
 			this.state.talkObj.groupName = data.groupName;
 			this.state.talkObj.background = data.background;
 			this.state.talkObj.bgSound = data.bgSound;
+			this.worksid = data.worksid;
 			this.forceUpdate();
 			this.defaultName = data.username;
-
+			var s = this;
+			s.wxConfig(data.shareTitle,data.shareDesc,data.shareImg);
 			document.title = data.title;
 
-			this.talk.forEach((item,i)=>{
-				item.text && (item.text = item.text.replace(/{username}/ig,this.defaultName));
-			});
+			
 			this.iNow = 0 ;
-			//this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
-			this.renderTalk();
+			
+			$.ajax({
+				url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
+				data:{
+					code:s.getQueryString('code'),
+					wxappid:data.wxappid,
+					wxappsecret:data.wxappsecret
+				},
+				error(e){
+					
+					s.defaultName =  data.username || '智媒体';
+					s.talk.forEach((item,i)=>{
+						item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+					});
+					s.forceUpdate();
+
+					s.renderTalk();
+				},
+				success(dt){
+					if(dt.getret === 0){
+						s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
+						s.talk.forEach((item,i)=>{
+							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+						});
+						s.talk.forEach((item,i)=>{
+							
+							if(item.isMe){
+								item.head =  dt.userinfo.headimgurl
+							}
+						});
+						s.forceUpdate();
+
+						s.renderTalk();
+					}
+					else{
+
+						if(s.isWeiXin()){
+							$.ajax({
+								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+								data:{
+									redirect_uri:window.location.href,
+									scope:'snsapi_userinfo',
+									worksid:s.worksid,
+									state:new Date().getTime()+''
+								},
+								error(){
+									alert('error')
+								},
+								success(dt){
+									alert(dt.getret);
+									if(dt.getret === 0){
+										window.location.href =  dt.url;
+									}
+								}
+							})
+						}
+						else{
+							s.defaultName =  data.username || '智媒体';
+							s.talk.forEach((item,i)=>{
+								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+							});
+							s.forceUpdate();
+
+							s.renderTalk();	
+						}
+
+					}
+
+
+				}
+			});
+
+			
 		});
+
+
 
 		$(document).on('touchstart',()=>{
 			if(this.refs['audio'] && this.refs['audio'].paused){
@@ -264,6 +294,27 @@ export class App extends Component {
 			}	
 		})
 		
+	}
+
+	isWeiXin(){
+	    var ua = window.navigator.userAgent.toLowerCase();
+	    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+	        return true;
+	    }else{
+	        return false;
+	    }
+    }
+
+    getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return (r[2]);
+        return null;
+    }
+
+	componentWillMount() {
+		var s = this;
+
 	}
 
 	clearRender(){

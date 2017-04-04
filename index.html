@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=640,user-scalable=no">
+	<meta name="format-detection" content="telephone=no,email=no" />
 	<title></title>
 	<script>
 		document.addEventListener("touchmove",function(e){e.preventDefault();});
@@ -23,11 +24,13 @@
 			
 			function onError(){
 				var script  = document.createElement('script');
-				script.src = './assets/js/index.js';
+				script.src = './assets/js/index.js?aa='+new Date().getTime();
 				document.body.appendChild(script);
 			}
 
 		</script>
+
+		<script src='http://res.wx.qq.com/open/js/jweixin-1.2.0.js'></script>
 
 		<!-- <script src='http://res.wx.qq.com/open/js/jweixin-1.2.0.js'></script> -->
 		<script src='http://localhost:3004/index.js' onError='onError()'></script>
