@@ -13,6 +13,8 @@ export class App extends Component {
 			currentHref:'',
 			showMembers:false,
 			showGroupName:false,
+			currentAudio:'',
+			currentVideo:'',
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -68,7 +70,18 @@ export class App extends Component {
 														</aside>
 														<aside>
 															<div onTouchTap={this.displayFrame.bind(this,item.href)}>
-																{item.text || <img  src={item.img}/>}
+																{item.text && item.text}
+																{item.img && <img  src={item.img}/>}
+																{item.audioSrc && <section onTouchTap={this.playAudio.bind(this,i)} className='wxchat-audia'>
+																	<audio preload='auto' ref={'audio-'+i} src={item.audioSrc}></audio>
+																	<img src='./assets/images/audio-ico.png' />
+																</section>}
+
+																{item.videoSrc && <section onTouchTap={this.playVideo.bind(this,i)} className='wxchat-video'>
+																	<img src='./assets/images/video-ico.jpg' />
+																	<video src={item.videoSrc} ref={'video-'+i}></video>
+																</section>}
+
 															</div>
 														</aside>
 
@@ -83,7 +96,16 @@ export class App extends Component {
 											<aside>{item.name}</aside>
 											<aside>
 												<div onTouchTap={this.displayFrame.bind(this,item.href)}>
-													{item.text || <img  src={item.img}/>}
+													{item.text && item.text}
+													{item.img && <img  src={item.img}/>}
+													{item.audioSrc && <section onTouchTap={this.playAudio.bind(this,i)} className='wxchat-audia'>
+														<img src='./assets/images/audio-ico.png' />
+														<audio preload='auto' ref={'audio-'+i} src={item.audioSrc}></audio>
+														</section>}
+													{item.videoSrc && <section onTouchTap={this.playVideo.bind(this,i)} className='wxchat-video'>
+																	<img src='./assets/images/video-ico.jpg' />
+																	<video src={item.videoSrc} ref={'video-'+i}></video>
+																</section>}
 												</div>
 											</aside>
 										</div>
@@ -105,6 +127,31 @@ export class App extends Component {
 
 			</div>
 		);
+	}
+
+	playVideo(i){
+		
+		this.refs['video-'+i].play();
+
+		this.refs['video-'+i].classList.add('active');
+
+		this.refs['video-'+i].addEventListener('pause',()=>{
+			this.refs['video-'+i].classList.remove('active');			
+		})
+
+
+	}
+
+	playAudio(i){
+
+		if(this.refs['audio-'+i].paused){
+			this.refs['audio-'+i].play();
+		}
+		else{
+			this.refs['audio-'+i].pause();	
+		}
+		return false;
+
 	}
 
 	wxConfig(title,desc,img){
@@ -206,7 +253,6 @@ export class App extends Component {
 			this.forceUpdate();
 			this.defaultName = data.username;
 			var s = this;
-			s.wxConfig(data.shareTitle,data.shareDesc,data.shareImg);
 			document.title = data.title;
 
 			
@@ -220,14 +266,36 @@ export class App extends Component {
 					wxappsecret:data.wxappsecret
 				},
 				error(e){
-					
-					s.defaultName =  data.username || '智媒体';
-					s.talk.forEach((item,i)=>{
-						item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-					});
-					s.forceUpdate();
 
-					s.renderTalk();
+					if(s.isWeiXin()){
+						$.ajax({
+							url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+							data:{
+								redirect_uri:window.location.href,
+								scope:'snsapi_userinfo',
+								worksid:s.worksid,
+								state:new Date().getTime()+''
+							},
+							error(){
+								alert('error1111111--'+s.worksid)
+							},
+							success(dt){
+								if(dt.getret === 0){
+									//window.location.href =  dt.url;
+								}
+							}
+						})
+					}
+					else{
+						s.defaultName =  data.username || '智媒体';
+						s.talk.forEach((item,i)=>{
+							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+						});
+						s.forceUpdate();
+
+						s.renderTalk();
+					}
+
 				},
 				success(dt){
 					if(dt.getret === 0){
@@ -247,6 +315,8 @@ export class App extends Component {
 					}
 					else{
 
+						
+
 						if(s.isWeiXin()){
 							$.ajax({
 								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
@@ -260,9 +330,8 @@ export class App extends Component {
 									alert('error')
 								},
 								success(dt){
-									alert(dt.getret);
 									if(dt.getret === 0){
-										window.location.href =  dt.url;
+										//window.location.href =  dt.url;
 									}
 								}
 							})
@@ -288,10 +357,12 @@ export class App extends Component {
 
 
 
-		$(document).on('touchstart',()=>{
+		$(document).one('touchstart',()=>{
+			this.refs['talkAudio'].pause();
+			this.refs['talkAudio'].play();
 			if(this.refs['audio'] && this.refs['audio'].paused){
 				this.refs['audio'].play();
-			}	
+			};
 		})
 		
 	}

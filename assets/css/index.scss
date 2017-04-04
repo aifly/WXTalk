@@ -96,9 +96,71 @@ $viewW:640px;
   width:$viewW - 70;
   margin:25px auto;
   li{
-
+  
+    .wxchat-audia{
+        background:#fff;
+        height:62px;
+        width:200px;
+        @include br(5px);
+        img{
+          margin:14px;
+          width:30px;
+        }
+        &:after{
+          display:none;
+        }
+        &:before{
+        content:'';
+        @include pos(a);
+        $size1:12px;
+        width:$size1;
+        height: $size1;
+        background-color:inherit;
+        left: -$size1 / 2;
+        top:16px;
+        @include transform(rotate(45deg));
+        }
+    }
+    .wxchat-video video{
+      @include pos(a);
+      opacity:0;
+      z-index: -1;
+      width:100vw;
+      height:56vw;
+      left:-800px;
+      &.active{
+        left:0;
+        top:0;
+        opacity:0;
+      }
+    }
 
     &.zmiti-user{
+      .wxchat-audia{
+        background:#a7e753;
+        text-align: right;
+        width:200px;
+        img{
+          @include transform(rotate(180deg));
+        }
+        &:after{
+        display:none;
+        }
+        &:before{
+        content:'';
+        @include pos(a);
+        $size1:12px;
+        width:$size1;
+        height: $size1;
+        background-color:inherit;
+        right: -$size1 / 2;
+        left:auto;
+        
+        @include transform(rotate(45deg));
+        }
+      }
+
+
       -webkit-box-pack:end;   
       .zmiti-talk-content{
         
@@ -232,4 +294,6 @@ $viewW:640px;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
   }
+
+  
 }

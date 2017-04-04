@@ -96,6 +96,8 @@
 				currentHref: '',
 				showMembers: false,
 				showGroupName: false,
+				currentAudio: '',
+				currentVideo: '',
 				talkObj: {
 					date: '3月4日',
 					member: [{ name: '国务院总理李克强', img: './assets/images/zmiti.jpg', id: 1 }, { name: '傅莹(十二届全国人大五次会议发言人)', img: './assets/images/zmiti.jpg', id: 2 }, { name: '王国庆(全国政协十二届五次会议发言人)', img: './assets/images/zmiti.jpg', id: 3 }, { name: '陈吉宁（环境保护部部长）', img: './assets/images/zmiti.jpg', id: 4 }, { name: '王军(国家税务局局长)', img: './assets/images/zmiti.jpg', id: 5 }, { name: '陈政高（住房和城乡建设部部长）', img: './assets/images/zmiti.jpg', id: 6 }],
@@ -191,7 +193,20 @@
 														_react2['default'].createElement(
 															'div',
 															{ onTouchTap: _this.displayFrame.bind(_this, item.href) },
-															item.text || _react2['default'].createElement('img', { src: item.img })
+															item.text && item.text,
+															item.img && _react2['default'].createElement('img', { src: item.img }),
+															item.audioSrc && _react2['default'].createElement(
+																'section',
+																{ onTouchTap: _this.playAudio.bind(_this, i), className: 'wxchat-audia' },
+																_react2['default'].createElement('audio', { preload: 'auto', ref: 'audio-' + i, src: item.audioSrc }),
+																_react2['default'].createElement('img', { src: './assets/images/audio-ico.png' })
+															),
+															item.videoSrc && _react2['default'].createElement(
+																'section',
+																{ onTouchTap: _this.playVideo.bind(_this, i), className: 'wxchat-video' },
+																_react2['default'].createElement('img', { src: './assets/images/video-ico.jpg' }),
+																_react2['default'].createElement('video', { src: item.videoSrc, ref: 'video-' + i })
+															)
 														)
 													)
 												),
@@ -216,7 +231,20 @@
 													_react2['default'].createElement(
 														'div',
 														{ onTouchTap: _this.displayFrame.bind(_this, item.href) },
-														item.text || _react2['default'].createElement('img', { src: item.img })
+														item.text && item.text,
+														item.img && _react2['default'].createElement('img', { src: item.img }),
+														item.audioSrc && _react2['default'].createElement(
+															'section',
+															{ onTouchTap: _this.playAudio.bind(_this, i), className: 'wxchat-audia' },
+															_react2['default'].createElement('img', { src: './assets/images/audio-ico.png' }),
+															_react2['default'].createElement('audio', { preload: 'auto', ref: 'audio-' + i, src: item.audioSrc })
+														),
+														item.videoSrc && _react2['default'].createElement(
+															'section',
+															{ onTouchTap: _this.playVideo.bind(_this, i), className: 'wxchat-video' },
+															_react2['default'].createElement('img', { src: './assets/images/video-ico.jpg' }),
+															_react2['default'].createElement('video', { src: item.videoSrc, ref: 'video-' + i })
+														)
 													)
 												)
 											)
@@ -242,6 +270,30 @@
 						)
 					)
 				);
+			}
+		}, {
+			key: 'playVideo',
+			value: function playVideo(i) {
+				var _this2 = this;
+
+				this.refs['video-' + i].play();
+
+				this.refs['video-' + i].classList.add('active');
+
+				this.refs['video-' + i].addEventListener('pause', function () {
+					_this2.refs['video-' + i].classList.remove('active');
+				});
+			}
+		}, {
+			key: 'playAudio',
+			value: function playAudio(i) {
+
+				if (this.refs['audio-' + i].paused) {
+					this.refs['audio-' + i].play();
+				} else {
+					this.refs['audio-' + i].pause();
+				}
+				return false;
 			}
 		}, {
 			key: 'wxConfig',
@@ -322,23 +374,22 @@
 		}, {
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				var _this2 = this;
+				var _this3 = this;
 
 				this.talk = [];
 				_jquery2['default'].getJSON('./assets/js/data.json', function (data) {
-					_this2.talk = data.talk;
-					_this2.state.talkObj.member = data.memberList;
-					_this2.state.talkObj.groupName = data.groupName;
-					_this2.state.talkObj.background = data.background;
-					_this2.state.talkObj.bgSound = data.bgSound;
-					_this2.worksid = data.worksid;
-					_this2.forceUpdate();
-					_this2.defaultName = data.username;
-					var s = _this2;
-					s.wxConfig(data.shareTitle, data.shareDesc, data.shareImg);
+					_this3.talk = data.talk;
+					_this3.state.talkObj.member = data.memberList;
+					_this3.state.talkObj.groupName = data.groupName;
+					_this3.state.talkObj.background = data.background;
+					_this3.state.talkObj.bgSound = data.bgSound;
+					_this3.worksid = data.worksid;
+					_this3.forceUpdate();
+					_this3.defaultName = data.username;
+					var s = _this3;
 					document.title = data.title;
 
-					_this2.iNow = 0;
+					_this3.iNow = 0;
 
 					_jquery2['default'].ajax({
 						url: 'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
@@ -349,13 +400,33 @@
 						},
 						error: function error(e) {
 
-							s.defaultName = data.username || '智媒体';
-							s.talk.forEach(function (item, i) {
-								item.text && (item.text = item.text.replace(/{username}/ig, s.defaultName));
-							});
-							s.forceUpdate();
+							if (s.isWeiXin()) {
+								_jquery2['default'].ajax({
+									url: 'http://api.zmiti.com/v2/weixin/getoauthurl/',
+									data: {
+										redirect_uri: window.location.href,
+										scope: 'snsapi_userinfo',
+										worksid: s.worksid,
+										state: new Date().getTime() + ''
+									},
+									error: function error() {
+										alert('error1111111--' + s.worksid);
+									},
+									success: function success(dt) {
+										if (dt.getret === 0) {
+											//window.location.href =  dt.url;
+										}
+									}
+								});
+							} else {
+									s.defaultName = data.username || '智媒体';
+									s.talk.forEach(function (item, i) {
+										item.text && (item.text = item.text.replace(/{username}/ig, s.defaultName));
+									});
+									s.forceUpdate();
 
-							s.renderTalk();
+									s.renderTalk();
+								}
 						},
 						success: function success(dt) {
 							if (dt.getret === 0) {
@@ -387,30 +458,31 @@
 											alert('error');
 										},
 										success: function success(dt) {
-											alert(dt.getret);
 											if (dt.getret === 0) {
-												window.location.href = dt.url;
+												//window.location.href =  dt.url;
 											}
 										}
 									});
 								} else {
-									s.defaultName = data.username || '智媒体';
-									s.talk.forEach(function (item, i) {
-										item.text && (item.text = item.text.replace(/{username}/ig, s.defaultName));
-									});
-									s.forceUpdate();
+										s.defaultName = data.username || '智媒体';
+										s.talk.forEach(function (item, i) {
+											item.text && (item.text = item.text.replace(/{username}/ig, s.defaultName));
+										});
+										s.forceUpdate();
 
-									s.renderTalk();
-								}
+										s.renderTalk();
+									}
 							}
 						}
 					});
 				});
 
-				(0, _jquery2['default'])(document).on('touchstart', function () {
-					if (_this2.refs['audio'] && _this2.refs['audio'].paused) {
-						_this2.refs['audio'].play();
-					}
+				(0, _jquery2['default'])(document).one('touchstart', function () {
+					_this3.refs['talkAudio'].pause();
+					_this3.refs['talkAudio'].play();
+					if (_this3.refs['audio'] && _this3.refs['audio'].paused) {
+						_this3.refs['audio'].play();
+					};
 				});
 			}
 		}, {
@@ -444,36 +516,36 @@
 		}, {
 			key: 'renderTalk',
 			value: function renderTalk() {
-				var _this3 = this;
+				var _this4 = this;
 
 				if (!this.state.showMembers) {
 					setTimeout(function () {
-						_this3.state.showMembers = true;
-						_this3.forceUpdate();
+						_this4.state.showMembers = true;
+						_this4.forceUpdate();
 					}, 1000);
 				}
 
 				var talkAudio = this.refs['talkAudio'];
 				this.talkTimer = setInterval(function () {
 
-					_this3.state.showGroupName = true;
-					_this3.forceUpdate();
+					_this4.state.showGroupName = true;
+					_this4.forceUpdate();
 					setTimeout(function () {
 
-						if (_this3.talk[_this3.iNow]) {
-							_this3.state.talkObj.talk.push(_this3.talk[_this3.iNow]);
+						if (_this4.talk[_this4.iNow]) {
+							_this4.state.talkObj.talk.push(_this4.talk[_this4.iNow]);
 							talkAudio.play();
-							_this3.iNow++;
-							_this3.forceUpdate();
+							_this4.iNow++;
+							_this4.forceUpdate();
 							setTimeout(function () {
-								_this3.state.scrollTop = _this3.refs['scroller'].offsetHeight - (_this3.viewH - 85) <= 0 ? 0 : -(_this3.refs['scroller'].offsetHeight - (_this3.viewH - 85));
-								_this3.forceUpdate();
+								_this4.state.scrollTop = _this4.refs['scroller'].offsetHeight - (_this4.viewH - 85) <= 0 ? 0 : -(_this4.refs['scroller'].offsetHeight - (_this4.viewH - 85));
+								_this4.forceUpdate();
 							}, 100);
 							//this.scroll.refresh();
 						} else {
-								clearInterval(_this3.talkTimer);
-								_this3.scroll = new _iscroll2['default'](_this3.refs['zmiti-scroll-C'], { preventDefault: false });
-								_this3.scroll.scrollTo(0, _this3.state.scrollTop, 0);
+								clearInterval(_this4.talkTimer);
+								_this4.scroll = new _iscroll2['default'](_this4.refs['zmiti-scroll-C'], { preventDefault: false });
+								_this4.scroll.scrollTo(0, _this4.state.scrollTop, 0);
 							}
 					}, 1800);
 				}, 2000);
@@ -34373,7 +34445,7 @@
 
 
 	// module
-	exports.push([module.id, ".lt-full{width:100%;height:100%;position:absolute;left:0;top:0}html,body,div,p,ul,li,ol,dl,dt,dd,header,footer,video,h1,h2,h3,h4,canvas,section,figure{padding:0;margin:0}a{text-decoration:none}li{list-style:none}html,body{height:100%}body{font-family:\"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;overflow-x:hidden;font-size:24px}img{border:none;vertical-align:middle;width:100%;height:auto}input,textarea{outline:none}.zmiti-main-ui{background:#ebebeb;position:absolute;width:640px;height:100vh;left:50%;margin-left:-320px}.zmiti-main-ui .zmiti-scroll-C{width:100%;box-sizing:border-box;overflow:hidden}.zmiti-main-ui .zmiti-scroll-C .zmiti-scroller{-webkit-transition:.2s;transition:.2s}.zmiti-main-ui .zmiti-date{height:30px;line-height:30px;text-align:center;margin-top:20px}.zmiti-main-ui .zmiti-date span{color:#fff;line-height:40px;background:#ccc;padding:8px 20px;font-size:24px;border-radius:5px}.zmiti-main-ui .zmiti-member{width:570px;margin:25px auto;background:#ccc;border-radius:5px;color:#fff;padding:14px 20px;line-height:32px;box-sizing:border-box;font-size:22px;position:relative;-webkit-text-size-adjust:none}.zmiti-main-ui .zmiti-member div{height:100%;width:100%}.zmiti-modify-groupname{width:570px;margin:20px auto;text-align:center;background:#ccc;color:#fff;padding:6px 0;border-radius:5px}.zmiti-talk-C{width:570px;margin:25px auto}.zmiti-talk-C li{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-align:start;margin-top:30px}.zmiti-talk-C li.zmiti-user{-webkit-box-pack:end}.zmiti-talk-C li.zmiti-user .zmiti-talk-content{margin-right:24px;display:inline-block}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type{position:relative}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div{background:#a7e753}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before{content:'';right:-11px;left:auto;background:#a7e753;border-left:none;border-bottom:none}.zmiti-talk-C li .zmiti-talk-content{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:vertical;-webkit-box-pack:start;-webkit-box-align:start;margin-left:24px}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type{max-width:380px;box-sizing:border-box;position:relative}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div{background:#fff;border:1px solid #bbbbbb;font-size:26px;border-radius:8px;padding:18px 14px}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div a{color:inherit}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before{content:'';position:absolute;left:-11px;border-radius:3px;width:20px;height:20px;background:#fff;border:1px solid #bbb;border-right:none;border-top:none;top:20px;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.zmiti-talk-C .zmiti-talk-head{width:72px;height:72px}.zmiti-talk-C .zmiti-talk-content aside:first-of-type{color:#666666;-webkit-transform:scale(0.9) translate3d(0, -6px, 0);transform:scale(0.9) translate3d(0, -6px, 0);-webkit-transform-origin:left;transform-origin:left}.zmiti-talk-input{position:fixed;bottom:0;left:50%;margin-left:-320px;height:85px}.zmiti-frame{width:640px;height:100%;position:fixed;left:0;top:0;z-index:999}.zmiti-frame iframe{width:100%;height:100%}.zmiti-frame .zmiti-back{position:fixed;bottom:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:12px 26px;border-top-left-radius:5px;border-bottom-left-radius:5px}\r\n/*# sourceMappingURL=index.css.map */\r\n", ""]);
+	exports.push([module.id, ".lt-full{width:100%;height:100%;position:absolute;left:0;top:0}html,body,div,p,ul,li,ol,dl,dt,dd,header,footer,video,h1,h2,h3,h4,canvas,section,figure{padding:0;margin:0}a{text-decoration:none}li{list-style:none}html,body{height:100%}body{font-family:\"Helvetica Neue\", 'Helvetica', \"Microsoft YaHei\", '\\5FAE\\8F6F\\96C5\\9ED1', arial, sans-serif;overflow-x:hidden;font-size:24px}img{border:none;vertical-align:middle;width:100%;height:auto}input,textarea{outline:none}.zmiti-main-ui{background:#ebebeb;position:absolute;width:640px;height:100vh;left:50%;margin-left:-320px}.zmiti-main-ui .zmiti-scroll-C{width:100%;box-sizing:border-box;overflow:hidden}.zmiti-main-ui .zmiti-scroll-C .zmiti-scroller{-webkit-transition:.2s;transition:.2s}.zmiti-main-ui .zmiti-date{height:30px;line-height:30px;text-align:center;margin-top:20px}.zmiti-main-ui .zmiti-date span{color:#fff;line-height:40px;background:#ccc;padding:8px 20px;font-size:24px;border-radius:5px}.zmiti-main-ui .zmiti-member{width:570px;margin:25px auto;background:#ccc;border-radius:5px;color:#fff;padding:14px 20px;line-height:32px;box-sizing:border-box;font-size:22px;position:relative;-webkit-text-size-adjust:none}.zmiti-main-ui .zmiti-member div{height:100%;width:100%}.zmiti-modify-groupname{width:570px;margin:20px auto;text-align:center;background:#ccc;color:#fff;padding:6px 0;border-radius:5px}.zmiti-talk-C{width:570px;margin:25px auto}.zmiti-talk-C li{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-align:start;margin-top:30px}.zmiti-talk-C li .wxchat-audia{background:#fff;height:62px;width:200px;border-radius:5px}.zmiti-talk-C li .wxchat-audia img{margin:14px;width:30px}.zmiti-talk-C li .wxchat-audia:after{display:none}.zmiti-talk-C li .wxchat-audia:before{content:'';position:absolute;width:12px;height:12px;background-color:inherit;left:-6px;top:16px;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.zmiti-talk-C li .wxchat-video video{position:absolute;opacity:0;z-index:-1;width:100vw;height:56vw;left:-800px}.zmiti-talk-C li .wxchat-video video.active{left:0;top:0;opacity:0}.zmiti-talk-C li.zmiti-user{-webkit-box-pack:end}.zmiti-talk-C li.zmiti-user .wxchat-audia{background:#a7e753;text-align:right;width:200px}.zmiti-talk-C li.zmiti-user .wxchat-audia img{-webkit-transform:rotate(180deg);transform:rotate(180deg)}.zmiti-talk-C li.zmiti-user .wxchat-audia:after{display:none}.zmiti-talk-C li.zmiti-user .wxchat-audia:before{content:'';position:absolute;width:12px;height:12px;background-color:inherit;right:-6px;left:auto;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.zmiti-talk-C li.zmiti-user .zmiti-talk-content{margin-right:24px;display:inline-block}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li.zmiti-user .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type{position:relative}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type div{background:#a7e753}.zmiti-talk-C li.zmiti-user .zmiti-talk-content aside:last-of-type:before{content:'';right:-11px;left:auto;background:#a7e753;border-left:none;border-bottom:none}.zmiti-talk-C li .zmiti-talk-content{display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-orient:vertical;-webkit-box-pack:start;-webkit-box-align:start;margin-left:24px}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type:before{display:none}.zmiti-talk-C li .zmiti-talk-content.zmiti-talk-img aside:last-of-type div{background:transparent;border:none;padding:0}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type{max-width:380px;box-sizing:border-box;position:relative}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div{background:#fff;border:1px solid #bbbbbb;font-size:26px;border-radius:8px;padding:18px 14px}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type div a{color:inherit}.zmiti-talk-C li .zmiti-talk-content aside:last-of-type:before{content:'';position:absolute;left:-11px;border-radius:3px;width:20px;height:20px;background:#fff;border:1px solid #bbb;border-right:none;border-top:none;top:20px;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.zmiti-talk-C .zmiti-talk-head{width:72px;height:72px}.zmiti-talk-C .zmiti-talk-content aside:first-of-type{color:#666666;-webkit-transform:scale(0.9) translate3d(0, -6px, 0);transform:scale(0.9) translate3d(0, -6px, 0);-webkit-transform-origin:left;transform-origin:left}.zmiti-talk-input{position:fixed;bottom:0;left:50%;margin-left:-320px;height:85px}.zmiti-frame{width:640px;height:100%;position:fixed;left:0;top:0;z-index:999}.zmiti-frame iframe{width:100%;height:100%}.zmiti-frame .zmiti-back{position:fixed;bottom:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:12px 26px;border-top-left-radius:5px;border-bottom-left-radius:5px}\r\n/*# sourceMappingURL=index.css.map */\r\n", ""]);
 
 	// exports
 
