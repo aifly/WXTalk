@@ -20,7 +20,7 @@ export class App extends Component {
 			myHeadImg:'',
 			progress:'0%',
 			loadingImg:[],
-			showLoading:true,
+			showLoading:false,
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -272,129 +272,138 @@ export class App extends Component {
 
 			
 			this.forceUpdate(()=>{
-				this.loading(data.loadingImg,(scale)=>{
-					this.setState({
-						progress:(scale*100|0)+'%'
-					})
-				},()=>{
-					this.setState({
-						showLoading:false
-					})
-					$.ajax({
-						url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
-						data:{
-							code:s.getQueryString('code'),
-							wxappid:data.wxappid,
-							wxappsecret:data.wxappsecret
-						},
-						error(e){
-
-							if(s.isWeiXin()){
-
-								if(!localStorage.getItem('nickname')){
-									$.ajax({
-										url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
-										data:{
-											redirect_uri:window.location.href,
-											scope:'snsapi_userinfo',
-											worksid:s.worksid,
-											state:new Date().getTime()+''
-										},
-										error(){
-											
-										},
-										success(dt){
-											//alert(s.worksid);
-											
-											if(dt.getret === 0){
-												//window.location.href =  dt.url;
-											}
-										}
-									})
-								}
-								else{
-
-
-									s.talk.forEach((item,i)=>{
-										item.text && (item.text = item.text.replace(/{username}/ig,localStorage.getItem('nickname')));
-									});
-									s.forceUpdate();
-
-									s.renderTalk();
-								}
-
-								
-							}
-							else{
-								s.defaultName =  data.username || '智媒体';
-								s.talk.forEach((item,i)=>{
-									item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-								});
-								s.forceUpdate();
-
-								s.renderTalk();
-							}
-
-						},
-						success(dt){
-							if(dt.getret === 0){
-								s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
-
-								localStorage.setItem('nickname',dt.userinfo.nickname );
-								localStorage.setItem('headimgurl',dt.userinfo.headimgurl);
-								s.talk.forEach((item,i)=>{
-									item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-								});
-
-								s.talk.forEach((item,i)=>{
-									
-									if(item.isMe){
-										item.head =  dt.userinfo.headimgurl
-									}
-								});
-								s.state.myHeadImg = dt.userinfo.headimgurl
-								s.forceUpdate();
-
-								s.renderTalk();
-							}
-							else{
-
-								if(s.isWeiXin()){
-									$.ajax({
-										url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
-										data:{
-											redirect_uri:window.location.href.split('?')[0],
-											scope:'snsapi_userinfo',
-											worksid:s.worksid,
-											state:new Date().getTime()+''
-										},
-										error(){
-										},
-										success(dt){
-											if(dt.getret === 0){
-												window.location.href =  dt.url;
-											}
-										}
-									})
-								}
-								else{
-									s.defaultName =  data.username || '智媒体';
-									s.talk.forEach((item,i)=>{
-										item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-									});
-									
-									s.forceUpdate();
-
-									s.renderTalk();	
-								}
-
-							}
-
-
-						}
-					});
-				});
+				
 			});
+
+			$.ajax({
+				url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
+				data:{
+					code:s.getQueryString('code'),
+					wxappid:data.wxappid,
+					wxappsecret:data.wxappsecret
+				},
+				error(e){
+
+					if(s.isWeiXin()){
+
+						if(!localStorage.getItem('nickname')){
+							$.ajax({
+								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+								data:{
+									redirect_uri:window.location.href,
+									scope:'snsapi_userinfo',
+									worksid:s.worksid,
+									state:new Date().getTime()+''
+								},
+								error(){
+									
+								},
+								success(dt){
+									//alert(s.worksid);
+									
+									if(dt.getret === 0){
+										//window.location.href =  dt.url;
+									}
+								}
+							})
+						}
+						else{
+
+
+							s.talk.forEach((item,i)=>{
+								item.text && (item.text = item.text.replace(/{username}/ig,localStorage.getItem('nickname')));
+							});
+							s.forceUpdate();
+
+							s.renderTalk();
+						}
+
+						
+					}
+					else{
+						s.defaultName =  data.username || '智媒体';
+						s.talk.forEach((item,i)=>{
+							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+						});
+						s.forceUpdate();
+
+						s.renderTalk();
+					}
+
+				},
+				success(dt){
+					if(dt.getret === 0){
+						s.setState({
+							showLoading:true
+						});
+						
+						s.loading(data.loadingImg,(scale)=>{
+							s.setState({
+								progress:(scale*100|0)+'%'
+							})
+						},()=>{
+							s.setState({
+								showLoading:false
+							});
+							s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
+
+							localStorage.setItem('nickname',dt.userinfo.nickname );
+							localStorage.setItem('headimgurl',dt.userinfo.headimgurl);
+							s.talk.forEach((item,i)=>{
+								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+							});
+
+							s.talk.forEach((item,i)=>{
+								
+								if(item.isMe){
+									item.head =  dt.userinfo.headimgurl
+								}
+							});
+							s.state.myHeadImg = dt.userinfo.headimgurl
+							s.forceUpdate();
+
+							s.renderTalk();
+						});
+						
+					}
+					else{
+
+						if(s.isWeiXin()){
+							$.ajax({
+								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+								data:{
+									redirect_uri:window.location.href.split('?')[0],
+									scope:'snsapi_userinfo',
+									worksid:s.worksid,
+									state:new Date().getTime()+''
+								},
+								error(){
+								},
+								success(dt){
+									if(dt.getret === 0){
+										window.location.href =  dt.url;
+									}
+								}
+							})
+						}
+						else{
+							s.defaultName =  data.username || '智媒体';
+							s.talk.forEach((item,i)=>{
+								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+							});
+							
+							s.forceUpdate();
+
+							s.renderTalk();	
+						}
+
+					}
+
+
+				}
+			});
+
+
 			this.defaultName = data.username;
 		
 			document.title = data.title;
