@@ -5,6 +5,8 @@ import $ from 'jquery';
 injectTapEventPlugin();
 import IScroll from 'iscroll';
 import './assets/css/index.css';
+
+import ZmitiLoadingApp from './loading/index.jsx';
 export class App extends Component {
 	constructor(props) {
 		super(props);
@@ -15,6 +17,10 @@ export class App extends Component {
 			showGroupName:false,
 			currentAudio:'',
 			currentVideo:'',
+			myHeadImg:'',
+			progress:'0%',
+			loadingImg:[],
+			showLoading:true,
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -42,8 +48,9 @@ export class App extends Component {
 
 		return (
 			<div className='zmiti-main-ui' style={mainStyle}>
-				{this.state.talkObj.bgSound && <audio ref='audio' src={this.state.talkObj.bgSound} autoPlay loop></audio>}
-				<audio src='./assets/music/talk.mp3' ref='talkAudio'></audio>
+				{this.state.showLoading && <ZmitiLoadingApp {...this.state}></ZmitiLoadingApp>}
+				{this.state.talkObj.bgSound && <audio preload='auto' ref='audio' src={this.state.talkObj.bgSound} autoPlay loop></audio>}
+				<audio src='./assets/music/talk.mp3' ref='talkAudio' preload='auto'></audio>
 				<section className='zmiti-scroll-C' ref='zmiti-scroll-C' style={{height:this.viewH - 85}}>
 					<div ref='scroller' className={'zmiti-scroller'} style={{paddingBottom:20,WebkitTransform:'translate3d(0,'+this.state.scrollTop+'px,0)'}}>
 						{<section style={{display:'none'}} className='zmiti-date'><span>{this.state.talkObj.date}</span></section>}
@@ -78,7 +85,7 @@ export class App extends Component {
 																</section>}
 
 																{item.videoSrc && <section onTouchTap={this.playVideo.bind(this,i)} className='wxchat-video'>
-																	<img src='./assets/images/video-ico.jpg' />
+																	<img src='./assets/images/video-ico1.jpg' />
 																	<video src={item.videoSrc} ref={'video-'+i}></video>
 																</section>}
 
@@ -154,69 +161,73 @@ export class App extends Component {
 
 	}
 
-	wxConfig(title,desc,img){
+	wxConfig(title,desc,img,appId='wxfacf4a639d9e3bcc',worksid){
 		   var durl = location.href.split('#')[0]; //window.location;
 		        var code_durl = encodeURIComponent(durl);
 			$.ajax({
-				url:'http://api.zmiti.com/weixin/jssdk.php',
-				dataType:'jsonp',
-				jsonp: "callback",
+				type:'get',
+				url: "http://api.zmiti.com/weixin/jssdk.php",
 				data:{
 					type:'signature',
-					durl:durl
+					durl:code_durl,
+					worksid:worksid
 				},
-		    jsonpCallback: "jsonFlickrFeed",
-		    success(data){
-		    	wx.config({
-						    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-						    appId: 'wxfacf4a639d9e3bcc', // 必填，公众号的唯一标识
-						    timestamp:'1488558145' , // 必填，生成签名的时间戳
-						    nonceStr: 'Wm3WZYTPz0wzccnW', // 必填，生成签名的随机串
-						    signature: data.signature,// 必填，签名，见附录1
-						    jsApiList: [ 'checkJsApi',
-													  'onMenuShareTimeline',
-													  'onMenuShareAppMessage',
-													  'onMenuShareQQ',
-													  'onMenuShareWeibo',
-													  'hideMenuItems',
-													  'showMenuItems',
-													  'hideAllNonBaseMenuItem',
-													  'showAllNonBaseMenuItem'
-								] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-						});
+				dataType:'jsonp',
+				jsonp: "callback",
+			    jsonpCallback: "jsonFlickrFeed",
+			    success(data){
+			    	wx.config({
+							    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+							    appId:appId, // 必填，公众号的唯一标识
+							    timestamp:'1488558145' , // 必填，生成签名的时间戳
+							    nonceStr: 'Wm3WZYTPz0wzccnW', // 必填，生成签名的随机串
+							    signature: data.signature,// 必填，签名，见附录1
+							    jsApiList: [ 'checkJsApi',
+											  'onMenuShareTimeline',
+											  'onMenuShareAppMessage',
+											  'onMenuShareQQ',
+											  'onMenuShareWeibo',
+											  'hideMenuItems',
+											  'showMenuItems',
+											  'hideAllNonBaseMenuItem',
+											  'showAllNonBaseMenuItem'
+									] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+							});
 
-		    	wx.ready(()=>{
-		    			 		//朋友圈
-                    wx.onMenuShareTimeline({
-                        title: title, // 分享标题
-                        link: durl, // 分享链接
-                        imgUrl: img, // 分享图标
-                        desc: desc,
-                        success: function () { },
-                        cancel: function () { }
-                    });
-                    //朋友
-                    wx.onMenuShareAppMessage({
-                        title: title, // 分享标题
-                        link: durl, // 分享链接
-                        imgUrl: img, // 分享图标
-                        type: "link",
-                        dataUrl: "",
-                        desc: desc,
-                        success: function () { },
-                        cancel: function () { }
-                    });
-                    //qq
-                    wx.onMenuShareQQ({
-                        title: title, // 分享标题
-                        link: durl, // 分享链接
-                        imgUrl: img, // 分享图标
-                        desc: desc,
-                        success: function () { },
-                        cancel: function () { }
-                    });
-		    	});
-		    }
+			    	wx.ready(()=>{
+			    			 		//朋友圈
+	                    wx.onMenuShareTimeline({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        desc: desc,
+	                        success: function () { },
+	                        cancel: function () { }
+	                    });
+	                    //朋友
+	                    wx.onMenuShareAppMessage({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        type: "link",
+	                        dataUrl: "",
+	                        desc: desc,
+	                        success: function () {
+	                        },
+	                        cancel: function () { 
+	                        }
+	                    });
+	                    //qq
+	                    wx.onMenuShareQQ({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        desc: desc,
+	                        success: function () { },
+	                        cancel: function () { }
+	                    });
+			    	});
+			    }
 			});
 		
 	}
@@ -244,113 +255,165 @@ export class App extends Component {
 			
 		]
 		$.getJSON('./assets/js/data.json',(data)=>{
+
+			var s = this;
 			this.talk = data.talk;
 			this.state.talkObj.member = data.memberList;
 			this.state.talkObj.groupName = data.groupName;
 			this.state.talkObj.background = data.background;
 			this.state.talkObj.bgSound = data.bgSound;
 			this.worksid = data.worksid;
-			this.forceUpdate();
+
+			
+
+			this.state.myHeadImg = data.myHeadImg;
+
+			this.wxConfig(data.shareTitle,data.shareDesc,data.shareImg,data.wxappid,data.worksid);
+
+			
+			this.forceUpdate(()=>{
+				this.loading(data.loadingImg,(scale)=>{
+					this.setState({
+						progress:(scale*100|0)+'%'
+					})
+				},()=>{
+					this.setState({
+						showLoading:false
+					})
+					$.ajax({
+						url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
+						data:{
+							code:s.getQueryString('code'),
+							wxappid:data.wxappid,
+							wxappsecret:data.wxappsecret
+						},
+						error(e){
+
+							if(s.isWeiXin()){
+
+								if(!localStorage.getItem('nickname')){
+									$.ajax({
+										url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+										data:{
+											redirect_uri:window.location.href,
+											scope:'snsapi_userinfo',
+											worksid:s.worksid,
+											state:new Date().getTime()+''
+										},
+										error(){
+											
+										},
+										success(dt){
+											//alert(s.worksid);
+											
+											if(dt.getret === 0){
+												//window.location.href =  dt.url;
+											}
+										}
+									})
+								}
+								else{
+
+
+									s.talk.forEach((item,i)=>{
+										item.text && (item.text = item.text.replace(/{username}/ig,localStorage.getItem('nickname')));
+									});
+									s.forceUpdate();
+
+									s.renderTalk();
+								}
+
+								
+							}
+							else{
+								s.defaultName =  data.username || '智媒体';
+								s.talk.forEach((item,i)=>{
+									item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+								});
+								s.forceUpdate();
+
+								s.renderTalk();
+							}
+
+						},
+						success(dt){
+							if(dt.getret === 0){
+								s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
+
+								localStorage.setItem('nickname',dt.userinfo.nickname );
+								localStorage.setItem('headimgurl',dt.userinfo.headimgurl);
+								s.talk.forEach((item,i)=>{
+									item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+								});
+
+								s.talk.forEach((item,i)=>{
+									
+									if(item.isMe){
+										item.head =  dt.userinfo.headimgurl
+									}
+								});
+								s.state.myHeadImg = dt.userinfo.headimgurl
+								s.forceUpdate();
+
+								s.renderTalk();
+							}
+							else{
+
+								if(s.isWeiXin()){
+									$.ajax({
+										url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
+										data:{
+											redirect_uri:window.location.href.split('?')[0],
+											scope:'snsapi_userinfo',
+											worksid:s.worksid,
+											state:new Date().getTime()+''
+										},
+										error(){
+										},
+										success(dt){
+											if(dt.getret === 0){
+												window.location.href =  dt.url;
+											}
+										}
+									})
+								}
+								else{
+									s.defaultName =  data.username || '智媒体';
+									s.talk.forEach((item,i)=>{
+										item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+									});
+									
+									s.forceUpdate();
+
+									s.renderTalk();	
+								}
+
+							}
+
+
+						}
+					});
+				});
+			});
 			this.defaultName = data.username;
-			var s = this;
+		
 			document.title = data.title;
 
-			
-			this.iNow = 0 ;
-			
-			$.ajax({
-				url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
-				data:{
-					code:s.getQueryString('code'),
-					wxappid:data.wxappid,
-					wxappsecret:data.wxappsecret
-				},
-				error(e){
+			s.defaultName = localStorage.getItem('nickname') || data.username || '智媒体';
+		
 
-					if(s.isWeiXin()){
-						$.ajax({
-							url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
-							data:{
-								redirect_uri:window.location.href,
-								scope:'snsapi_userinfo',
-								worksid:s.worksid,
-								state:new Date().getTime()+''
-							},
-							error(){
-								alert('error1111111--'+s.worksid)
-							},
-							success(dt){
-								if(dt.getret === 0){
-									//window.location.href =  dt.url;
-								}
-							}
-						})
-					}
-					else{
-						s.defaultName =  data.username || '智媒体';
-						s.talk.forEach((item,i)=>{
-							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-						});
-						s.forceUpdate();
+			s.headimgurl = localStorage.getItem('headimgurl');
+		
 
-						s.renderTalk();
-					}
-
-				},
-				success(dt){
-					if(dt.getret === 0){
-						s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
-						s.talk.forEach((item,i)=>{
-							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-						});
-						s.talk.forEach((item,i)=>{
-							
-							if(item.isMe){
-								item.head =  dt.userinfo.headimgurl
-							}
-						});
-						s.forceUpdate();
-
-						s.renderTalk();
-					}
-					else{
-
-						
-
-						if(s.isWeiXin()){
-							$.ajax({
-								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
-								data:{
-									redirect_uri:window.location.href,
-									scope:'snsapi_userinfo',
-									worksid:s.worksid,
-									state:new Date().getTime()+''
-								},
-								error(){
-									alert('error')
-								},
-								success(dt){
-									if(dt.getret === 0){
-										//window.location.href =  dt.url;
-									}
-								}
-							})
-						}
-						else{
-							s.defaultName =  data.username || '智媒体';
-							s.talk.forEach((item,i)=>{
-								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-							});
-							s.forceUpdate();
-
-							s.renderTalk();	
-						}
-
-					}
-
-
+			s.talk.forEach((item,i)=>{
+				if(item.isMe && s.headimgurl){
+					item.head =  s.headimgurl
 				}
 			});
+			s.headimgurl && (s.state.myHeadImg = s.headimgurl);
+			this.iNow = 0 ;
+			s.forceUpdate();
+			
 
 			
 		});
@@ -359,13 +422,42 @@ export class App extends Component {
 
 		$(document).one('touchstart',()=>{
 			this.refs['talkAudio'].pause();
+			this.refs['talkAudio'].muted = true;
 			this.refs['talkAudio'].play();
+			setTimeout(()=>{
+				this.refs['talkAudio'].muted = false;
+			},500);
 			if(this.refs['audio'] && this.refs['audio'].paused){
 				this.refs['audio'].play();
 			};
 		})
 		
 	}
+
+	loading(arr, fn, fnEnd){
+        var len = arr.length;
+        var count = 0;
+        var i = 0;
+        
+        function loadimg() {
+            if (i === len) {
+                return;
+            }
+            var img = new Image();
+            img.onload = img.onerror = function(){
+                count++;
+                if (i < len - 1) {
+                    i++;
+                    loadimg();
+                    fn && fn(i / (len - 1), img.src);
+                } else {
+                    fnEnd && fnEnd(img.src);
+                }
+            };
+            img.src = arr[i];
+        }
+       loadimg();
+    }
 
 	isWeiXin(){
 	    var ua = window.navigator.userAgent.toLowerCase();
