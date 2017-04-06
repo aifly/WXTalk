@@ -281,8 +281,13 @@ $viewW:640px;
   top:0;
   z-index: 999;
   iframe{
-    width:100%;
+    width:640px;
     height:100%;
+    @include pos(f);
+    left: 50%;
+    margin-left: -320px;
+    top:0;
+    background-color: #fff;
   }
   .zmiti-back{
     @include pos(f);

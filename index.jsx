@@ -10,6 +10,8 @@ import ZmitiLoadingApp from './loading/index.jsx';
 export class App extends Component {
 	constructor(props) {
 		super(props);
+
+
 		this.state = {
 			scrollTop:0,
 			currentHref:'',
@@ -65,7 +67,7 @@ export class App extends Component {
 														<span>等加入群聊</span>
 													</div>
 												</section>}
-						{this.state.talkObj.groupName && this.state.showGroupName && <section className='zmiti-modify-groupname'>{this.state.talkObj.member[0].name}修改群名称为{this.state.talkObj.groupName}</section>}
+						{this.state.talkObj.title && this.state.showGroupName && <section className='zmiti-modify-groupname'>{this.state.talkObj.member[0].name}修改群名称为{this.state.talkObj.title}</section>}
 						<section className='zmiti-talk-C'>
 							<ul className='zmiti-talk-list'>
 								{this.state.talkObj.talk.map((item,i)=>{
@@ -166,15 +168,12 @@ export class App extends Component {
 		        var code_durl = encodeURIComponent(durl);
 			$.ajax({
 				type:'get',
-				url: "http://api.zmiti.com/weixin/jssdk.php",
-				data:{
-					type:'signature',
-					durl:code_durl,
-					worksid:worksid
-				},
+				url: "http://api.zmiti.com/weixin/jssdk.php?type=signature&durl="+code_durl+"&worksid="+worksid,
 				dataType:'jsonp',
 				jsonp: "callback",
 			    jsonpCallback: "jsonFlickrFeed",
+			    error(){
+			    },
 			    success(data){
 			    	wx.config({
 							    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -262,6 +261,7 @@ export class App extends Component {
 			this.state.talkObj.groupName = data.groupName;
 			this.state.talkObj.background = data.background;
 			this.state.talkObj.bgSound = data.bgSound;
+			this.state.talkObj.title = data.title;
 			this.worksid = data.worksid;
 
 			
@@ -332,6 +332,7 @@ export class App extends Component {
 
 				},
 				success(dt){
+
 					if(dt.getret === 0){
 						s.setState({
 							showLoading:true
@@ -345,6 +346,20 @@ export class App extends Component {
 							s.setState({
 								showLoading:false
 							});
+
+							$.ajax({
+								url:'http://api.zmiti.com/v2/works/update_pvnum/',
+								data:{
+									worksid:s.worksid
+								},
+								success(data){
+									if(data.getret === 0){
+										console.log(data);
+									}
+								}
+							});
+
+
 							s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
 
 							localStorage.setItem('nickname',dt.userinfo.nickname );
@@ -368,7 +383,7 @@ export class App extends Component {
 					}
 					else{
 
-						if(s.isWeiXin()){
+						if(s.isWeiXin() ){
 							$.ajax({
 								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
 								data:{
@@ -387,6 +402,17 @@ export class App extends Component {
 							})
 						}
 						else{
+							$.ajax({
+								url:'http://api.zmiti.com/v2/works/update_pvnum/',
+								data:{
+									worksid:s.worksid
+								},
+								success(data){
+									if(data.getret === 0){
+										console.log(data);
+									}
+								}
+							});
 							s.defaultName =  data.username || '智媒体';
 							s.talk.forEach((item,i)=>{
 								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
