@@ -257,6 +257,68 @@ $viewW:640px;
     height:72px;
     
   }
+
+  .zmiti-linkobj-C{
+        &:before{
+          content:'';
+          @include pos(a);
+          width:10px;
+          height: 10px;
+          @include transform(rotate(45deg));
+          background: #fff;
+          left: -5px;
+          top:8px;
+
+        }
+
+        &.zmiti-linkobj-isMe{
+            &:before{display: none;}
+            &:after{
+              content:'';
+              @include pos(a);
+              width:20px;
+              height: 20px;
+              @include transform(rotate(45deg));
+              background: #fff;
+              right: -10px;
+              top:16px;
+
+            }  
+           
+        }
+        max-width: 380px;
+        width: 380px;
+        height:140px;
+        background-color: #fff !important;
+        box-sizing:border-box;
+        padding:10px 20px !important;
+        @include pos(r);
+        section:nth-of-type(1){
+            overflow: hidden;
+            white-space:nowrap;
+            word-break:break-all;
+            text-overflow:ellipsis;
+            -webkit-text-overflow:ellipsis;
+        }
+        section:nth-of-type(2){
+          font-size: 24px;
+          @include transform(scale(.8));
+          @include transformOrigin(left);
+          overflow: hidden;
+          max-height: 38px;
+          word-wrap:break-word;
+          word-break:break-all;
+          color:#999;
+        }
+        section:nth-of-type(3){
+          @include pos(a);
+          right:10px;
+          bottom: 10px;
+          width:60px;
+          height: 60px;
+          @include br(4px);
+        }
+  }
   .zmiti-talk-content{
     aside:first-of-type{
       color:#666666;

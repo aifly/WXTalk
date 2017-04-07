@@ -91,11 +91,19 @@ export class App extends Component {
 																	<video src={item.videoSrc} ref={'video-'+i}></video>
 																</section>}
 
+																{item.linkObj && (item.linkObj.img || item.linkObj.title||item.linkObj.href ||item.linkObj.desc) && <div onTouchTap={this.displayFrame.bind(this,item.linkObj.href)} className='zmiti-linkobj-C zmiti-linkobj-isMe'>
+																<section>{item.linkObj.title}</section>
+																<section>{item.linkObj.desc}</section>
+																<section style={{background:'url('+(item.linkObj.img || './assets/images/zmiti.jpg')+') no-repeat center / cover'}}></section>
+															</div>}
+
+
+
 															</div>
 														</aside>
 
 													</div>
-													<div className='zmiti-talk-head' style={{background:'url('+item.head+') no-repeat center / cover'}}>
+													<div className='zmiti-talk-head' style={{background:'url('+(item.head||'./assets/images/zmiti.jpg')+') no-repeat center / cover'}}>
 													</div>
 												</li>
 									}
@@ -115,6 +123,11 @@ export class App extends Component {
 																	<img src='./assets/images/video-ico.jpg' />
 																	<video src={item.videoSrc} ref={'video-'+i}></video>
 																</section>}
+													{item.linkObj && (item.linkObj.img || item.linkObj.title||item.linkObj.href ||item.linkObj.desc) && <div className='zmiti-linkobj-C' onTouchTap={this.displayFrame.bind(this,item.linkObj.href)}>
+																<section>{item.linkObj.title}</section>
+																<section>{item.linkObj.desc}</section>
+																<section style={{background:'url('+(item.linkObj.img || './assets/images/zmiti.jpg')+') no-repeat center / cover'}}></section>
+															</div>}
 												</div>
 											</aside>
 										</div>
@@ -247,6 +260,8 @@ export class App extends Component {
 		}
 		
 	}
+
+	
 
 	componentDidMount() {
 		
@@ -383,6 +398,10 @@ export class App extends Component {
 					}
 					else{
 
+						s.setState({
+							showLoading:true
+						});
+
 						if(s.isWeiXin() ){
 							$.ajax({
 								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
@@ -402,25 +421,43 @@ export class App extends Component {
 							})
 						}
 						else{
-							$.ajax({
-								url:'http://api.zmiti.com/v2/works/update_pvnum/',
-								data:{
-									worksid:s.worksid
-								},
-								success(data){
-									if(data.getret === 0){
-										console.log(data);
-									}
-								}
-							});
-							s.defaultName =  data.username || '智媒体';
-							s.talk.forEach((item,i)=>{
-								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-							});
-							
-							s.forceUpdate();
 
-							s.renderTalk();	
+							s.loading(data.loadingImg,(scale)=>{
+								s.setState({
+									progress:(scale*100|0)+'%'
+								})
+							},()=>{
+								s.setState({
+									showLoading:false
+								});
+
+								$.ajax({
+									url:'http://api.zmiti.com/v2/works/update_pvnum/',
+									data:{
+										worksid:s.worksid
+									},
+									success(data){
+										if(data.getret === 0){
+											console.log(data);
+										}
+									}
+								});
+
+
+								s.defaultName =  data.username || '智媒体';
+								s.talk.forEach((item,i)=>{
+									item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
+								});
+								
+								s.forceUpdate();
+
+								s.renderTalk();	
+
+							
+						});
+
+
+						 
 						}
 
 					}
