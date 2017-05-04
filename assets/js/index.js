@@ -109,7 +109,7 @@
 				showLoading: false,
 				talkObj: {
 					date: '3月4日',
-					member: [{ name: '国务院总理李克强', img: './assets/images/zmiti.jpg', id: 1 }, { name: '傅莹(十二届全国人大五次会议发言人)', img: './assets/images/zmiti.jpg', id: 2 }, { name: '王国庆(全国政协十二届五次会议发言人)', img: './assets/images/zmiti.jpg', id: 3 }, { name: '陈吉宁（环境保护部部长）', img: './assets/images/zmiti.jpg', id: 4 }, { name: '王军(国家税务局局长)', img: './assets/images/zmiti.jpg', id: 5 }, { name: '陈政高（住房和城乡建设部部长）', img: './assets/images/zmiti.jpg', id: 6 }],
+					member: [],
 					talk: []
 				}
 			};
@@ -342,6 +342,7 @@
 
 				var durl = location.href.split('#')[0]; //window.location;
 				var code_durl = encodeURIComponent(durl);
+
 				_jquery2['default'].ajax({
 					type: 'get',
 					url: "http://api.zmiti.com/weixin/jssdk.php?type=signature&durl=" + code_durl + "&worksid=" + worksid,
@@ -360,17 +361,6 @@
 						});
 
 						wx.ready(function () {
-
-							wx.getLocation({
-								type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-								success: function success(res) {
-									var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-									var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-									var speed = res.speed; // 速度，以米/每秒计
-									var accuracy = res.accuracy; // 位置精度
-								},
-								error: function error() {}
-							});
 
 							//朋友圈
 							wx.onMenuShareTimeline({
@@ -500,7 +490,6 @@
 								s.setState({
 									showLoading: true
 								});
-
 								s.loading(data.loadingImg, function (scale) {
 									s.setState({
 										progress: (scale * 100 | 0) + '%'
@@ -550,8 +539,9 @@
 								if (s.isWeiXin()) {
 									_jquery2['default'].ajax({
 										url: 'http://api.zmiti.com/v2/weixin/getoauthurl/',
+										type: 'post',
 										data: {
-											redirect_uri: window.location.href.split('?')[0],
+											redirect_uri: window.location.href.replace(/code/ig, 'zmiti'),
 											scope: 'snsapi_userinfo',
 											worksid: s.worksid,
 											state: new Date().getTime() + ''
