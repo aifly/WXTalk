@@ -158,6 +158,125 @@ export class App extends Component {
 
 	}
 
+	getPos(nickname,headimgurl){
+
+	    	var s = this;
+	    	 $.ajax({
+	        	url:`http://restapi.amap.com/v3/geocode/regeo?key=10df4af5d9266f83b404c007534f0001&location=${wx.posData.longitude},${wx.posData.latitude}&poitype=&radius=100&extensions=base&batch=false&roadlevel=1`+'',
+				type:'get',
+				error(){
+
+				},
+				success(data){
+					if(data.status === '1' && data.infocode === '10000'){
+						
+						var addressComponent = data.regeocode.addressComponent;
+						var opt = {
+					   		type:'map',
+					   		address:(addressComponent.city[0]||addressComponent.province)+addressComponent.district,
+					   		pos:[wx.posData.longitude,wx.posData.latitude],
+					   		nickname:nickname,
+					   		headimgurl:headimgurl
+					   	}
+
+					   	s.setState({
+					   		nickname,
+					   		headimgurl,
+					   		showUI:true,
+					   		latitude:wx.posData.latitude,
+					   		longitude:wx.posData.longitude,
+					   		usercity:(addressComponent.city[0]||addressComponent.province)+addressComponent.district
+					   	});
+
+					   	$.ajax({
+							url:'http://api.zmiti.com/v2/weixin/save_userview/',
+							type:'post',
+							data:{
+								worksid:s.worksid,
+								wxopenid:s.openid,
+								wxname:nickname,
+								usercity:opt.address,
+								longitude:wx.posData.longitude,
+								latitude:wx.posData.latitude
+							}
+						}).done((data)=>{
+							if(data.getret === 0 ){
+								
+							}else{
+								alert('getret : '+ data.getret +' msg : '+ data.getmsg)
+							}
+						},()=>{
+							//alert('save_userview error');
+						})
+
+					   	$.ajax({
+					   		url:'http://api.zmiti.com/v2/weixin/add_wxuser/',
+					   		type:'post',
+					   		data:{
+					   			wxopenid:s.openid,
+					   			worksid:s.worksid,
+					   			nickname:nickname,
+					   			headimgurl:headimgurl,
+					   			longitude:wx.posData.longitude,
+					   			latitude:wx.posData.latitude,
+					   			accuracy:wx.posData.accuracy,
+					   			wxappid:s.state.wxappid,
+					   			integral:localStorage.getItem('nickname')?0:10
+					   		},
+					   		error(){
+					   			alert('add_wxuser: 服务器返回错误');
+					   		},
+					   		success(data){
+					   			if(data.getret === 0){
+					   				
+					   				$.ajax({
+										url:'http://api.zmiti.com/v2/weixin/get_wxuserdetaile',
+										data:{
+											wxopenid:s.openid
+										},
+										success(data){
+											if(data.getret === 0){
+												
+												s.score = data.wxuserinfo.totalintegral;
+												s.setState({
+													score:s.score
+												});
+											}else{
+												alert('get_wxuserdetaile : getret  : '+ data.getret + ' msg : ' + data.getmsg);	
+											}
+										}
+									})
+
+					   			}else{
+					   				alert('getret  : '+ data.getret + ' msg : ' + data.getmsg+ ' .....');
+					   			}
+					   		}
+					   	});
+
+					   	//获取用户积分
+						//
+				   		$.ajax({
+							url:'http://api.zmiti.com/v2/msg/send_msg/',
+							data:{
+								type:s.worksid,
+								content:JSON.stringify(opt),
+								to:opt.to||''
+							},
+							success(data){
+								s.state.showUI = true;
+								s.forceUpdate();
+								//console.log(data);
+							}
+						})
+					}
+					else{
+						alert('地址信息获取失败')
+					}
+				}						        	
+	        })
+    }
+
+
 	playAudio(i){
 
 		if(this.refs['audio-'+i].paused){
@@ -173,6 +292,9 @@ export class App extends Component {
 	wxConfig(title,desc,img,appId='wxfacf4a639d9e3bcc',worksid){
 		   var durl = location.href.split('#')[0]; //window.location;
 		        var code_durl = encodeURIComponent(durl);
+
+
+		        var s = this;
 
 			$.ajax({
 				type:'get',
@@ -203,6 +325,28 @@ export class App extends Component {
 
 			    	wx.ready(()=>{
 
+			    		wx.getLocation({
+						    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+						    fail(){
+						    },
+						    success: function (res) {
+						        var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+						        var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+						        var speed = res.speed; // 速度，以米/每秒计
+						        var accuracy = res.accuracy; // 位置精度
+
+						        wx.posData = {
+						        	longitude,
+						        	latitude,
+						        	accuracy
+						        };
+
+						        if((s.nickname || s.headimgurl) && s.openid){
+						        	s.getPos(s.nickname,s.headimgurl);
+						        }
+						       
+						    }
+						});
 
 			    			 		//朋友圈
 	                    wx.onMenuShareTimeline({
@@ -247,9 +391,29 @@ export class App extends Component {
 		});
 		this.renderTalk(this.iNow);
 	}
-
+	changeURLPar(destiny, par, par_value) { 
+		var pattern = par+'=([^&]*)'; 
+		var replaceText = par+'='+par_value; 
+		if (destiny.match(pattern)) { 
+			var tmp = '/\\'+par+'=[^&]*/'; 
+			tmp = destiny.replace(eval(tmp), replaceText); 
+			return (tmp); 
+		} 
+		else { 
+			if (destiny.match('[\?]')) { 
+				return destiny+'&'+ replaceText; 
+			} 
+			else { 
+				return destiny+'?'+replaceText; 
+			} 
+		} 
+		return destiny+'\n'+par+'\n'+par_value; 
+	} 
 	displayFrame(href){
+
 		if(href){
+			href = this.changeURLPar(href,'openid',this.openid);
+			href = this.changeURLPar(href,'worksid',this.worksid);
 			this.setState({
 				currentHref:href
 			});	
@@ -295,52 +459,7 @@ export class App extends Component {
 					wxappsecret:data.wxappsecret
 				},
 				error(e){
-
-					if(s.isWeiXin()){
-
-						if(!localStorage.getItem('nickname')){
-							$.ajax({
-								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
-								data:{
-									redirect_uri:window.location.href,
-									scope:'snsapi_userinfo',
-									worksid:s.worksid,
-									state:new Date().getTime()+''
-								},
-								error(){
-									
-								},
-								success(dt){
-									//alert(s.worksid);
-									
-									if(dt.getret === 0){
-										//window.location.href =  dt.url;
-									}
-								}
-							})
-						}
-						else{
-
-
-							s.talk.forEach((item,i)=>{
-								item.text && (item.text = item.text.replace(/{username}/ig,localStorage.getItem('nickname')));
-							});
-							s.forceUpdate();
-
-							s.renderTalk();
-						}
-
-						
-					}
-					else{
-						s.defaultName =  data.username || '智媒体';
-						s.talk.forEach((item,i)=>{
-							item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
-						});
-						s.forceUpdate();
-
-						s.renderTalk();
-					}
+ 
 
 				},
 				success(dt){
@@ -371,13 +490,21 @@ export class App extends Component {
 							});
 
 
+							
 							s.defaultName = dt.userinfo.nickname || data.username || '智媒体';
+
+
 
 							localStorage.setItem('nickname',dt.userinfo.nickname );
 							localStorage.setItem('headimgurl',dt.userinfo.headimgurl);
+							s.openid = dt.userinfo.openid;
 							s.talk.forEach((item,i)=>{
 								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
 							});
+
+							if (wx.posData && wx.posData.longitude) {
+								s.getPos(dt.userinfo.nickname, dt.userinfo.headimgurl);
+							}
 
 							s.talk.forEach((item,i)=>{
 								
