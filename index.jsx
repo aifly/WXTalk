@@ -159,7 +159,6 @@ export class App extends Component {
 	}
 
 	getPos(nickname,headimgurl){
-
 	    	var s = this;
 	    	 $.ajax({
 	        	url:`http://restapi.amap.com/v3/geocode/regeo?key=10df4af5d9266f83b404c007534f0001&location=${wx.posData.longitude},${wx.posData.latitude}&poitype=&radius=100&extensions=base&batch=false&roadlevel=1`+'',
@@ -187,7 +186,6 @@ export class App extends Component {
 					   		longitude:wx.posData.longitude,
 					   		usercity:(addressComponent.city[0]||addressComponent.province)+addressComponent.district
 					   	});
-
 					   	$.ajax({
 							url:'http://api.zmiti.com/v2/weixin/save_userview/',
 							type:'post',
@@ -203,7 +201,7 @@ export class App extends Component {
 							if(data.getret === 0 ){
 								
 							}else{
-								alert('getret : '+ data.getret +' msg : '+ data.getmsg)
+								alert('save_userview getret : '+ data.getret +' msg : '+ data.getmsg)
 							}
 						},()=>{
 							//alert('save_userview error');
@@ -220,7 +218,7 @@ export class App extends Component {
 					   			longitude:wx.posData.longitude,
 					   			latitude:wx.posData.latitude,
 					   			accuracy:wx.posData.accuracy,
-					   			wxappid:s.state.wxappid,
+					   			wxappid:s.wxappid,
 					   			integral:localStorage.getItem('nickname')?0:10
 					   		},
 					   		error(){
@@ -410,10 +408,10 @@ export class App extends Component {
 		return destiny+'\n'+par+'\n'+par_value; 
 	} 
 	displayFrame(href){
-
 		if(href){
 			href = this.changeURLPar(href,'openid',this.openid);
 			href = this.changeURLPar(href,'worksid',this.worksid);
+			href = this.changeURLPar(href,'wxappid',this.wxappid);
 			this.setState({
 				currentHref:href
 			});	
@@ -440,7 +438,7 @@ export class App extends Component {
 			this.state.talkObj.title = data.title;
 			this.worksid = data.worksid;
 
-			
+			s.wxappid = data.wxappid;
 
 			this.state.myHeadImg = data.myHeadImg;
 
@@ -498,11 +496,14 @@ export class App extends Component {
 							localStorage.setItem('nickname',dt.userinfo.nickname );
 							localStorage.setItem('headimgurl',dt.userinfo.headimgurl);
 							s.openid = dt.userinfo.openid;
+							s.nickname = dt.userinfo.nickname;
+							s.headimgurl = dt.userinfo.headimgurl;
 							s.talk.forEach((item,i)=>{
 								item.text && (item.text = item.text.replace(/{username}/ig,s.defaultName));
 							});
 
 							if (wx.posData && wx.posData.longitude) {
+
 								s.getPos(dt.userinfo.nickname, dt.userinfo.headimgurl);
 							}
 
