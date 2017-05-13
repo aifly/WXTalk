@@ -692,34 +692,38 @@ export class App extends Component {
 		}
 
 		var talkAudio = this.refs['talkAudio'];
-		this.talkTimer = setInterval(()=>{
-			
-		
+
+		setTimeout(()=>{
 			this.state.showGroupName = true;
 			this.forceUpdate();
-			setTimeout(()=>{
-				
-				if(this.talk[this.iNow]){
+			
+			render();
+		},2000)
+
+
+		var render = ()=>{
+			if(this.talk[this.iNow]){
+				setTimeout(()=>{
 					this.state.talkObj.talk.push(this.talk[this.iNow]);
+					talkAudio.muted = false;
 					talkAudio.play();
 	 				this.iNow++;			
 					this.forceUpdate();	
 					setTimeout(()=>{
 						this.state.scrollTop = this.refs['scroller'].offsetHeight - (this.viewH - 85)<=0?0:-(this.refs['scroller'].offsetHeight - (this.viewH - 85));
 						this.forceUpdate();	
-					},100)
+					},100);
+					render();
 					//this.scroll.refresh();
-				}
-				else{
-					clearInterval(this.talkTimer);
-					this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
-					this.scroll.scrollTo(0,this.state.scrollTop,0);
-				}
-			},1800);
 					
+				},this.talk[this.iNow-1]?this.talk[this.iNow-1].duration*1000:2000);
+			}else{
+				this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+				this.scroll.scrollTo(0,this.state.scrollTop,0);
+			}
+		}
 
-			
-		},2000);
+		
 	}
 }
 

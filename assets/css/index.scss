@@ -89,7 +89,8 @@ $viewW:640px;
   text-align: center;
   background:#ccc;
   color:#fff;
-  padding:6px 0;
+  padding:6px;
+  box-sizing:border-box;
   @include br(5px);
 }
 .zmiti-talk-C{
@@ -189,7 +190,7 @@ $viewW:640px;
               }
               &:before{
                 content:'';
-                right:-11px;
+                right:-10px;
                 left: auto;
                 background: #a7e753;
                 border-left: none;
@@ -238,7 +239,7 @@ $viewW:640px;
         &:before{
           content:'';
           @include pos(a);
-          left:-11px;
+          left:-10px;
           @include br(3px);
           width:20px;
           height: 20px;
