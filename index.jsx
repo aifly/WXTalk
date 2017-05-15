@@ -448,6 +448,8 @@ export class App extends Component {
 				
 			});
 
+
+
 			 
 			$.ajax({
 				url:'http://api.zmiti.com/v2/weixin/getwxuserinfo/',
@@ -457,8 +459,6 @@ export class App extends Component {
 					wxappsecret:data.wxappsecret
 				},
 				error(e){
- 
-
 				},
 				success(dt){
 					 
@@ -528,6 +528,12 @@ export class App extends Component {
 						});
 
 						if(s.isWeiXin() ){
+
+							if(localStorage.getItem('oauthurl'+s.worksid)){
+								window.location.href = localStorage.getItem('oauthurl'+s.worksid);
+								return;
+							}
+
 							$.ajax({
 								url:'http://api.zmiti.com/v2/weixin/getoauthurl/',
 								type:'post',
@@ -541,6 +547,7 @@ export class App extends Component {
 								},
 								success(dt){
 									if(dt.getret === 0){
+										localStorage.setItem('oauthurl'+s.worksid,dt.url);
 										window.location.href =  dt.url;
 									}
 								}
